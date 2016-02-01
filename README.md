@@ -91,14 +91,14 @@ Array that will be returned when downloading:
 
 | Array Index   | What it is    | Explanation |
 | ------------- |:-------------:| ----- |
-| 0             | DCC receive string     | The bot sends you a string with connection which details you need to follow.|
-| 1             | Filename               | Filename of the file that you currently are downloading |
-| 2             | Filesize               | Size of the file that you currently  are downloading|
-| 3             | Server IP              | IP from the file server to which you have connected  |
-| 4             | Server Port            | Port from the file server to which you have connected |
-| 5             | Pack Number            | Packnumer corresponding to the file you have requested through XDCC|
-| 6             | Bot Name               | Bot from which you requested the file |
-| 7             | Progress               | Progress of completion is %  |
+| 0             | DCC receive string     | The bot sends you a string with connection details.|
+| 1             | Filename               | Filename of the file that you currently are downloading. |
+| 2             | Filesize               | Size of the file that you currently  are downloading.|
+| 3             | Server IP              | IP from the file server to which you have connected. |
+| 4             | Server Port            | Port from the file server to which you have connected. |
+| 5             | Pack Number            | Packnumer corresponding to the file you have requested through XDCC.|
+| 6             | Bot Name               | Bot from which you requested the file. |
+| 7             | Progress               | Progress of completion is %.  |
 | 8             | Bytes Per Second       | |
 | 9             | KBytes Per Second      | |
 | 10            | MBytes Per Second      | |
