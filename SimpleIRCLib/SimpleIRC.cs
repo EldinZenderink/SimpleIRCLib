@@ -14,6 +14,8 @@ namespace SimpleIRCLib
         //global static debug function
         public static Action<string> DebugCallBack;
 
+        public static Action downloadStatusChange;
+
         //private variables
         private string newIP;
         private int newPort;
@@ -57,6 +59,11 @@ namespace SimpleIRCLib
         public void setDebugCallback(Action<string> callback)
         {
             DebugCallBack = callback;
+        }
+
+        public void setDownloadStatusChangeCallback(Action callback)
+        {
+            downloadStatusChange = callback;
         }
 
         public void setIP(string IP)
@@ -119,6 +126,15 @@ namespace SimpleIRCLib
             } catch (NullReferenceException e)
             {
                 DebugCallBack = debugVoid;
+            }
+
+            try
+            {
+                downloadStatusChange();
+            }
+            catch (NullReferenceException e)
+            {
+                downloadStatusChange = downloadStatusVoid;
             }
 
             IrcConnect con = new IrcConnect(newIP, newPort, newUsername, newPassword, newChannel);
@@ -189,6 +205,11 @@ namespace SimpleIRCLib
 
 
         public void debugVoid(string input)
+        {
+            //does nothing
+        }
+
+        public void downloadStatusVoid()
         {
             //does nothing
         }

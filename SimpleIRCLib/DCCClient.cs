@@ -170,6 +170,7 @@ namespace SimpleIRCLib
                             MBytes_Seconds = KBytes_Seconds / 1024;
                             oldBytesReceived = bytesReceived;
                             start = DateTime.Now;
+                            downloadStatusChange();
                         }
 
                         //global checker to keep track if download is bussy
