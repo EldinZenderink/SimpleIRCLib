@@ -1,4 +1,4 @@
-# SimpleIRCLib for C#
+# SimpleIRCLib for Csharp
 **THIS LIBRARY IS STILL IN DEVELOPMENT**
 
 This library is designed to make communication through IRC easier to implement in your application. In comparison to other C# IRC libraries, this library also enables you to download using the DCC (XDCC) protocol, used by IRC. 
@@ -12,7 +12,7 @@ It's main features are:
   - DCC Download support
 
 ### NuGet
-[NuGet Package](https://www.nuget.org/packages/SimpleIRCLib/1.0.0)
+[NuGet Package](https://www.nuget.org/packages/SimpleIRCLib)
 
 ### Direct Download DLL
 [DLL](https://github.com/EldinZenderink/SimpleIRCLib/raw/master/SimpleIRCLib/bin/Debug/SimpleIRCLib.dll)
