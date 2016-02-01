@@ -1,0 +1,4 @@
+c:\users\eldin\documents\visual studio 2015\Projects\SimpleIRCLib\SimpleIRCLib\bin\Debug\SimpleIRCLib.dll
+c:\users\eldin\documents\visual studio 2015\Projects\SimpleIRCLib\SimpleIRCLib\bin\Debug\SimpleIRCLib.pdb
+c:\users\eldin\documents\visual studio 2015\Projects\SimpleIRCLib\SimpleIRCLib\obj\Debug\SimpleIRCLib.dll
+c:\users\eldin\documents\visual studio 2015\Projects\SimpleIRCLib\SimpleIRCLib\obj\Debug\SimpleIRCLib.pdb

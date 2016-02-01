@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleIRCLib", "SimpleIRCLib\SimpleIRCLib.csproj", "{3D881A50-DB1A-464E-A51E-4CE5EB8BD5F1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IrcLibTest", "IrcLibTest\IrcLibTest.csproj", "{27C58F1A-4851-4A5B-85F7-C387971543DA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3D881A50-DB1A-464E-A51E-4CE5EB8BD5F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D881A50-DB1A-464E-A51E-4CE5EB8BD5F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D881A50-DB1A-464E-A51E-4CE5EB8BD5F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D881A50-DB1A-464E-A51E-4CE5EB8BD5F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{27C58F1A-4851-4A5B-85F7-C387971543DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{27C58F1A-4851-4A5B-85F7-C387971543DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{27C58F1A-4851-4A5B-85F7-C387971543DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{27C58F1A-4851-4A5B-85F7-C387971543DA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
