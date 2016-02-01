@@ -113,6 +113,14 @@ namespace SimpleIRCLib
         //starts the irc client
         public void startClient()
         {
+            try
+            {
+                DebugCallBack("Start server!");
+            } catch (NullReferenceException e)
+            {
+                DebugCallBack = debugVoid;
+            }
+
             IrcConnect con = new IrcConnect(newIP, newPort, newUsername, newPassword, newChannel);
             conCheck = con.Connect();
 
@@ -180,7 +188,10 @@ namespace SimpleIRCLib
         }
 
 
-
+        public void debugVoid(string input)
+        {
+            //does nothing
+        }
 
     }
 }
