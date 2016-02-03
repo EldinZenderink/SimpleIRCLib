@@ -23,6 +23,11 @@ namespace SimpleIRCLib
         {
             pingSender.Start();
         }
+
+        public void Stop()
+        {
+            pingSender.Abort();
+        }
         //function that runs in the ping thread, used to keep the connection with the irc server alive
         public void Run()
         {

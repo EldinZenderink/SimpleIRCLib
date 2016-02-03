@@ -22,7 +22,8 @@ namespace SimpleIRCLib
         private int newPortNum;
         private int newFileSize;
         private string newIp;
-        private string downloadDir;
+        private string curDownloadDir;
+        private Thread downloader;
         private string[] dccparts;
 
         private Int64 Progress;
@@ -33,6 +34,7 @@ namespace SimpleIRCLib
         private string botName;
         private string packNum;
 
+
         //public vars
         public static bool Downloading;
 
@@ -40,7 +42,7 @@ namespace SimpleIRCLib
         public DCCClient(string dccString, string downloaddir, string bot, string pack)
         {
             newDccString = dccString;
-            downloadDir = downloaddir;
+            curDownloadDir = downloaddir;
             botName = bot;
             packNum = pack;
 
@@ -111,7 +113,7 @@ namespace SimpleIRCLib
                 string filesizes = dccparts[3].Substring(0, charlength - 1);
                 newFileSize = Convert.ToInt32(filesizes);
 
-                Thread downloader = new Thread(new ThreadStart(this.Downloader));
+                downloader = new Thread(new ThreadStart(this.Downloader));
                 downloader.Start();
             }
             catch (Exception e)
@@ -130,7 +132,7 @@ namespace SimpleIRCLib
         public void Downloader()
         {
             DebugCallBack("Start Downloader \n ");
-            string dlDirAndFileName = downloadDir + "\\" + newFileName;
+            string dlDirAndFileName = curDownloadDir + "\\" + newFileName;
             try
             {
                 if (!File.Exists(dlDirAndFileName))
@@ -243,5 +245,11 @@ namespace SimpleIRCLib
 
             Downloading = false;
         }        
+
+        public void abortDownloader()
+        {
+            DebugCallBack("Downloader Stopped");
+            downloader.Abort();
+        }
     }
 }

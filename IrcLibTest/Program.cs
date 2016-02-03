@@ -10,6 +10,8 @@ namespace IrcLibTest
 {
     class Program
     {
+
+        private static SimpleIRC irc;
         static void Main(string[] args)
         {
             //setup vars
@@ -54,39 +56,34 @@ namespace IrcLibTest
                 channel = "#horriblesubs";
             }
 
-            SimpleIRC irc = new SimpleIRC();
+            irc = new SimpleIRC();
             irc.setupIrc(ip, port, username, password, channel, chatOutputCallback);
             irc.setDebugCallback(debugOutputCallback);
             irc.startClient();
+            irc.setDownloadStatusChangeCallback(downloadStatusChanged);
 
-            string prevProg = "";
+          
             while (true)
             {
-                if(irc.getDownloadProgress()[0] != "NULL")
-                {
-                    string currentProg = irc.getDownloadProgress()[7];
-
-                    if(currentProg != prevProg)
-                    {
-                        Console.WriteLine("DOWNLOAD PROGRESS: " + currentProg + "%");
-                    }
-                    prevProg = currentProg;
-                    Thread.Sleep(1);
-                } else
-                {
+               
                     string Input = Console.ReadLine();
                     if (Input != null || Input != "" || Input != String.Empty)
                     {
                         irc.sendMessage(Input);
                     }
-                }
                
             }
         }
 
-        public static void chatOutputCallback(string chat)
+        public static void downloadStatusChanged()
         {
-            Console.WriteLine(chat);
+
+            Console.WriteLine("DOWNLOAD PROGRESS: " + irc.getDownloadProgress()[7] + "%");
+        }
+
+        public static void chatOutputCallback(string user, string message)
+        {
+            Console.WriteLine(user + ": " + message);
         }
 
         public static void debugOutputCallback(string debug)
