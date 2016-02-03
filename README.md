@@ -23,6 +23,13 @@ It's main features are:
 
 1.0.1:
 - Fixed bug where leaving out debug callback would cause nullreferenceexception. 
+
+
+1.1.1:
+- Added split in username | message
+- Added quit/disconnect method
+- removed usesless getters and setters
+- fixed a few more less significant bugs
 ### Usage - Console Application
 
 *TIP: If you do not want a seperate DLL file with your program you can either copy the .cs files to your solution/project and manually change the Namespace, or you can use a program called [ILMerge](https://www.microsoft.com/en-us/download/details.aspx?id=17630) to combine a exe and dll together(not tested)!*
@@ -31,10 +38,15 @@ This is a list with the most important methods available to you:
 
     (void)        setupIrc(ip, port, username, password, channel, chatOutputCallback);
     (void)        setDebugCallback(debugOutputCallback);
-    (void)        setCustomDownloadDir(downloaddir);    
+    (void)        setCustomDownloadDir(downloaddir);  
+    (void)        setDownloadStatus(downloadStatusCallback);
     (void)        startClient();
+    (void)        stopClient();
+    (bool)        isClientRunning();
     (void)        sendMessage(message);
     (string[])    getDownloadProgress() 
+    (string)      getUsername();
+    (string)      getChannel();
 
 
 Before you start programming, you need to get the package on the NuGet page for this library, or you need to download the dll file manually and reference it in your c# solution/project. Afterwards, you need to do the following:
@@ -67,7 +79,13 @@ Your callbacks should/could look like this:
         Console.WriteLine("===============END DEBUG MESSAGE===============");
     }
     
-**You do not have to create a debugOutputCallback, this is optional!**
+**downloadStatusCallback:**
+
+    void debugOutputCallback(string debug)
+    {
+        string[] downloadData = irc.getDownloadProgress(); //see below for definition of each index in this array
+    }
+    
 
 And here is a bit of gibrish code for sending messages to the irc server:
     
@@ -139,9 +157,9 @@ I will try to fix (significant) bugs as quick as possible, but due to my study t
 
 ### Todos
 
-- Make chatoutput more readable (username and message seperate)
 - Some DCC fixes, most things seem to work, but there are some odd cases where it might not work.
 - More readable code
+- Rename methods to make more sense (downloaStatus & downloadProgress are meant for the same thing, derp)
 - Maybe, if requested, DCC upload. 
 
 
