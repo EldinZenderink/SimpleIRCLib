@@ -3,3 +3,8 @@ c:\users\eldin\documents\visual studio 2015\Projects\SimpleIRCLib\SimpleIRCLib\b
 c:\users\eldin\documents\visual studio 2015\Projects\SimpleIRCLib\SimpleIRCLib\obj\Debug\SimpleIRCLib.dll
 c:\users\eldin\documents\visual studio 2015\Projects\SimpleIRCLib\SimpleIRCLib\obj\Debug\SimpleIRCLib.pdb
 C:\Users\Eldin\Documents\Visual Studio 2015\Projects\SimpleIRCLib\SimpleIRCLib\obj\Debug\SimpleIRCLib.csprojResolveAssemblyReference.cache
+C:\Users\Eldin\Documents\GitHub\SimpleIRCLib\SimpleIRCLib\bin\Debug\SimpleIRCLib.dll
+C:\Users\Eldin\Documents\GitHub\SimpleIRCLib\SimpleIRCLib\bin\Debug\SimpleIRCLib.pdb
+C:\Users\Eldin\Documents\GitHub\SimpleIRCLib\SimpleIRCLib\obj\Debug\SimpleIRCLib.csprojResolveAssemblyReference.cache
+C:\Users\Eldin\Documents\GitHub\SimpleIRCLib\SimpleIRCLib\obj\Debug\SimpleIRCLib.dll
+C:\Users\Eldin\Documents\GitHub\SimpleIRCLib\SimpleIRCLib\obj\Debug\SimpleIRCLib.pdb

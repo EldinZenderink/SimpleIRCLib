@@ -30,6 +30,11 @@ It's main features are:
 - Added quit/disconnect method
 - removed usesless getters and setters
 - fixed a few more less significant bugs
+
+1.1.2:
+- Removed getDownloadProgress, now download information can be retreived within the  downloadStatusChangedCallback.
+- Fixed error when you try to check if client is running before connecting to a server!
+
 ### Usage - Console Application
 
 *TIP: If you do not want a seperate DLL file with your program you can either copy the .cs files to your solution/project and manually change the Namespace, or you can use a program called [ILMerge](https://www.microsoft.com/en-us/download/details.aspx?id=17630) to combine a exe and dll together(not tested)!*
@@ -44,7 +49,6 @@ This is a list with the most important methods available to you:
     (void)        stopClient();
     (bool)        isClientRunning();
     (void)        sendMessage(message);
-    (string[])    getDownloadProgress() 
     (string)      getUsername();
     (string)      getChannel();
 
@@ -58,6 +62,7 @@ After doing that, add the following code to start your irc client:
     SimpleIRC irc = new SimpleIRC();
     irc.setupIrc(ip, port, username, password, channel, chatOutputCallback);
     irc.setDebugCallback(debugOutputCallback);
+    irc.setDownloadStatusChangedCallback(downloadStatusCallback);
     irc.startClient();
     
 Your callbacks should/could look like this:
@@ -81,9 +86,9 @@ Your callbacks should/could look like this:
     
 **downloadStatusCallback:**
 
-    void debugOutputCallback(string debug)
+    void downloadStatusCallback(string[] downloadStatus) //see below for definition of each index in this array
     {
-        string[] downloadData = irc.getDownloadProgress(); //see below for definition of each index in this array
+         Console.WriteLine("File: " + downloadStatus[1] + " \n Progress: " + downloadStatus[7] + "% \n Speed: " + downloadStatus[9] + "kb/s \n");
     }
     
 
@@ -121,29 +126,6 @@ Array that will be returned when downloading:
 | 9             | KBytes Per Second      | |
 | 10            | MBytes Per Second      | |
 
-**Be aware that progress and speed of your download are updated literally once a second!**
-
-So, for example, if you want to get the speed you are downloading at:
-
-    if(irc.getDownloadProgress()[0] != "NULL")
-    {
-        //progress in %
-        string currentProg = irc.getDownloadProgress()[7];
-        //dl speed in kb/s
-        string speed = irc.getDownloadProgress()[9]; 
-        
-        //update once a second, so no printing without change
-        if(currentProg != prevProg) 
-        {
-            Console.WriteLine("DOWNLOAD PROGRESS: " + currentProg + "%");
-            Console.WriteLine("DOWNLOAD SPEED: " + speed + " kb/s");
-        }
-        prevProg = currentProg;
-    } 
-    else 
-    {
-        Console.WriteLine("No Download In Progress");
-    }
 
 
 ### Full Example
@@ -159,7 +141,6 @@ I will try to fix (significant) bugs as quick as possible, but due to my study t
 
 - Some DCC fixes, most things seem to work, but there are some odd cases where it might not work.
 - More readable code
-- Rename methods to make more sense (downloaStatus & downloadProgress are meant for the same thing, derp)
 - Maybe, if requested, DCC upload. 
 
 

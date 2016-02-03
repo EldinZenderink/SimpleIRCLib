@@ -150,18 +150,6 @@ namespace SimpleIRCLib
             return conCheck;
         }
 
-        public string[] passDownloadProgress()
-        {
-            if (DCCClient.Downloading)
-            {
-                return dcc.downloadDetails();
-            }
-            else
-            {
-                return new string[] { "NULL", "", "", "", "", "", "", "", "", "", "", "" };
-            }
-        }
-
         //function to write to the irc server, bit easier to use and better looking
         public static void writeIrc(string input)
         {

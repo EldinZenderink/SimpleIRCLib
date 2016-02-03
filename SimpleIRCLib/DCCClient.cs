@@ -126,8 +126,8 @@ namespace SimpleIRCLib
         public string[] downloadDetails()
         {
             return new string[] { newDccString, newFileName, newFileSize.ToString(), newIp, newPortNum.ToString(), packNum, botName, Progress.ToString(), Bytes_Seconds.ToString(), KBytes_Seconds.ToString(), MBytes_Seconds.ToString() };
-        }       
-        
+        }
+
         //creates a tcp socket connection for the retrieved ip/port from the dcc ctcp by the dcc bot/server
         public void Downloader()
         {
@@ -172,7 +172,7 @@ namespace SimpleIRCLib
                             MBytes_Seconds = KBytes_Seconds / 1024;
                             oldBytesReceived = bytesReceived;
                             start = DateTime.Now;
-                            downloadStatusChange();
+                            downloadStatusChange(downloadDetails());
                         }
 
                         //global checker to keep track if download is bussy

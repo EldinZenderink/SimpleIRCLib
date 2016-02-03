@@ -14,7 +14,7 @@ namespace SimpleIRCLib
         //global static debug function
         public static Action<string> DebugCallBack;
 
-        public static Action downloadStatusChange;
+        public static Action<string[]> downloadStatusChange;
 
         public static Action<string, string> chatOutput;
 
@@ -74,7 +74,7 @@ namespace SimpleIRCLib
             DebugCallBack = callback;
         }
 
-        public void setDownloadStatusChangeCallback(Action callback)
+        public void setDownloadStatusChangeCallback(Action<string[]> callback)
         {
             downloadStatusChange = callback;
         }
@@ -90,7 +90,15 @@ namespace SimpleIRCLib
 
         public bool isClientRunning()
         {
-            return con.clientStatus();
+            try
+            {
+                return con.clientStatus();
+            }
+            catch
+            {
+                return false;
+            }
+            
         }
 
         public void stopClient()
@@ -102,10 +110,7 @@ namespace SimpleIRCLib
             }
         }
 
-        public string[] getDownloadProgress()
-        {
-            return con.passDownloadProgress();
-        }
+       
         //send message
         public void sendMessage(string message)
         {
@@ -132,7 +137,7 @@ namespace SimpleIRCLib
             //does nothing
         }
 
-        public void downloadStatusVoid()
+        public void downloadStatusVoid(string[] dlstuff)
         {
             //does nothing
         }
