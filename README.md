@@ -132,7 +132,8 @@ Array that will be returned when downloading:
 An (quick and dirty) example can be found here: 
 [Example](https://github.com/EldinZenderink/SimpleIRCLib/blob/master/IrcLibTest/Program.cs)
 
-A winform example will be here shortly (in video format).
+A winform example including video tutorial: 
+[YouTube](https://www.youtube.com/watch?v=Y5JPdwFwoSI)
 
 ### Development
 I will try to fix (significant) bugs as quick as possible, but due to my study taking a rollercoaster dive in a few days it might take a while before an actual update will appear. It is very barebone and does need some refinement. So, progress in development will come down to how much free time I have and how much of it I want to spend working on this library.
