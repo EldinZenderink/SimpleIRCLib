@@ -35,6 +35,15 @@ It's main features are:
 - Removed getDownloadProgress, now download information can be retreived within the  downloadStatusChangedCallback.
 - Fixed error when you try to check if client is running before connecting to a server!
 
+1.1.3:
+- Code mostly reworked by following feedback from this post: [reddit](https://www.reddit.com/r/csharp/comments/452i80/simple_irc_library_with_dcc_download_option_d/), such as:
+- removed static fields
+- removed inheriting classes
+- text now being parsed through regex
+- for receiving messages: a async task instead of a thread
+- getDownloadProgress/downloadStatusChangedCallback has different way of operation (see below)
+- addes status attribute for downloadstatus/progress
+
 ### Usage - Console Application
 
 *TIP: If you do not want a seperate DLL file with your program you can either copy the .cs files to your solution/project and manually change the Namespace, or you can use a program called [ILMerge](https://www.microsoft.com/en-us/download/details.aspx?id=17630) to combine a exe and dll together(not tested)!*
@@ -43,14 +52,15 @@ This is a list with the most important methods available to you:
 
     (void)        setupIrc(ip, port, username, password, channel, chatOutputCallback);
     (void)        setDebugCallback(debugOutputCallback);
-    (void)        setCustomDownloadDir(downloaddir);  
+    (string)      downloadDir;            //is now string, can be changed while running instance 
     (void)        setDownloadStatus(downloadStatusCallback);
     (void)        startClient();
     (void)        stopClient();
     (bool)        isClientRunning();
-    (void)        sendMessage(message);
-    (string)      getUsername();
-    (string)      getChannel();
+    (object)      getDownloadProgress(string whichdownloaddetail) //see below
+    (void)        sendMessage(message); 
+    (string)      newUsername;            //is now string field instead of method
+    (string)      newChannel;             //is now string field instead of method
 
 
 Before you start programming, you need to get the package on the NuGet page for this library, or you need to download the dll file manually and reference it in your c# solution/project. Afterwards, you need to do the following:
@@ -69,9 +79,9 @@ Your callbacks should/could look like this:
 
 **chatOutputCallback:**
 
-    void chatOutputCallback(string chat)
+    void chatOutputCallback(string user, string message)
     {
-        Console.WriteLine(chat);
+        Console.WriteLine(user + ":" + message);
     }
 
 
@@ -86,9 +96,12 @@ Your callbacks should/could look like this:
     
 **downloadStatusCallback:**
 
-    void downloadStatusCallback(string[] downloadStatus) //see below for definition of each index in this array
+    void downloadStatusCallback() //see below for definition of each index in this array
     {
-         Console.WriteLine("File: " + downloadStatus[1] + " \n Progress: " + downloadStatus[7] + "% \n Speed: " + downloadStatus[9] + "kb/s \n");
+         Object information = getDownloadProgress("progress");
+         Object speedkbps = getDownloadProgress("kbps");
+         Object status = getDownloadProgress("status");
+         Object filename = getDownloadProgress("filename");
     }
     
 
@@ -104,35 +117,36 @@ And here is a bit of gibrish code for sending messages to the irc server:
     }
 
 
-For getting information about the download in progress, you can use this function:
+For getting information about the download in progress (in `downloadStatusChangeCallback()`), you can use this function:
 
-`getDownloadProgress()`
+`getDownloadProgress(string whichdownloaddetail)`
 
 This will return an array of strings when a download is running, but if there is no download while you are requesting information, it will return a empty array, except for the first index which will contain the string "NULL".
 
 Array that will be returned when downloading:
 
-| Array Index   | What it is    | Explanation |
+| Whichdownloaddetail  | What it is    | Explanation |
 | ------------- |:-------------:| ----- |
-| 0             | DCC receive string     | The bot sends you a string with connection details.|
-| 1             | Filename               | Filename of the file that you currently are downloading. |
-| 2             | Filesize               | Size of the file that you currently  are downloading.|
-| 3             | Server IP              | IP from the file server to which you have connected. |
-| 4             | Server Port            | Port from the file server to which you have connected. |
-| 5             | Pack Number            | Packnumer corresponding to the file you have requested through XDCC.|
-| 6             | Bot Name               | Bot from which you requested the file. |
-| 7             | Progress               | Progress of completion is %.  |
-| 8             | Bytes Per Second       | |
-| 9             | KBytes Per Second      | |
-| 10            | MBytes Per Second      | |
+| dccstring     | DCC receive string     | The bot sends you a string with connection details.|
+| filename      | Filename               | Filename of the file that you currently are downloading. |
+| size          | Filesize               | Size of the file that you currently  are downloading.|
+| ip            | Server IP              | IP from the file server to which you have connected. |
+| port          | Server Port            | Port from the file server to which you have connected. |
+| pack          | Pack Number            | Packnumer corresponding to the file you have requested through XDCC.|
+| bot           | Bot Name               | Bot from which you requested the file. |
+| progress      | Progress               | Progress of completion is %.  |
+| status        | status of download/connection| Gives status about download and connection, such as, waiting, downloading, failed | etc
+| bps           | Bytes Per Second       | |
+| kbps          | KBytes Per Second      | |
+| mbps          | MBytes Per Second      | |
 
 
 
-### Full Example
+### Full Example 
 An (quick and dirty) example can be found here: 
 [Example](https://github.com/EldinZenderink/SimpleIRCLib/blob/master/IrcLibTest/Program.cs)
 
-A winform example including video tutorial: 
+A winform example including video tutorial (v1.1.2): 
 [YouTube](https://www.youtube.com/watch?v=Y5JPdwFwoSI)
 
 ### Development
@@ -141,8 +155,8 @@ I will try to fix (significant) bugs as quick as possible, but due to my study t
 ### Todos
 
 - Some DCC fixes, most things seem to work, but there are some odd cases where it might not work.
-- More readable code
-- Maybe, if requested, DCC upload. 
+- More readable code (getting better)
+- Renaming some stupidly named names 
 
 
 ### Disclaimer
