@@ -53,7 +53,7 @@ namespace IrcLibTest
             Console.WriteLine("Channel(default is : #RareIRC) = ");
             if ((channel = Console.ReadLine()) == "")
             {
-                channel = "#horriblesubs";
+                channel = "#RareIRC";
             }
 
             irc = new SimpleIRC();
@@ -61,24 +61,23 @@ namespace IrcLibTest
             irc.setDebugCallback(debugOutputCallback);
             irc.startClient();
             irc.setDownloadStatusChangeCallback(downloadStatusChanged);
-
           
             while (true)
             {
                
-                    string Input = Console.ReadLine();
-                    if (Input != null || Input != "" || Input != String.Empty)
-                    {
-                        irc.sendMessage(Input);
-                    }
+                string Input = Console.ReadLine();
+                if (Input != null || Input != "" || Input != String.Empty)
+                {
+                    irc.sendMessage(Input);
+                }
                
             }
         }
 
         public static void downloadStatusChanged()
         {
-
-            Console.WriteLine("DOWNLOAD PROGRESS: " + irc.getDownloadProgress()[7] + "%");
+            Console.WriteLine("DOWNLOAD STATUS: " + irc.getDownloadProgress("status") + "%");
+            Console.WriteLine("DOWNLOAD PROGRESS: " + irc.getDownloadProgress("progress") + "%");
         }
 
         public static void chatOutputCallback(string user, string message)

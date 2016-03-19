@@ -1,8 +1,0 @@
-c:\users\eldin\documents\visual studio 2015\Projects\SimpleIRCLib\IrcLibTest\bin\Debug\IrcLibTest.exe.config
-c:\users\eldin\documents\visual studio 2015\Projects\SimpleIRCLib\IrcLibTest\bin\Debug\IrcLibTest.exe
-c:\users\eldin\documents\visual studio 2015\Projects\SimpleIRCLib\IrcLibTest\bin\Debug\IrcLibTest.pdb
-c:\users\eldin\documents\visual studio 2015\Projects\SimpleIRCLib\IrcLibTest\bin\Debug\SimpleIRCLib.dll
-c:\users\eldin\documents\visual studio 2015\Projects\SimpleIRCLib\IrcLibTest\bin\Debug\SimpleIRCLib.pdb
-c:\users\eldin\documents\visual studio 2015\Projects\SimpleIRCLib\IrcLibTest\obj\Debug\IrcLibTest.csprojResolveAssemblyReference.cache
-c:\users\eldin\documents\visual studio 2015\Projects\SimpleIRCLib\IrcLibTest\obj\Debug\IrcLibTest.exe
-c:\users\eldin\documents\visual studio 2015\Projects\SimpleIRCLib\IrcLibTest\obj\Debug\IrcLibTest.pdb

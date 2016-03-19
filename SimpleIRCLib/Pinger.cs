@@ -1,21 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Threading;
+﻿using System.Threading;
 
 namespace SimpleIRCLib
 {
-    class Pinger : SimpleIRC
+    class Pinger
     {
         //vars needed to ping pong with the server
         private string ping = "PING :";
         private Thread pingSender;
+        private SimpleIRC simpleirc;
+        private IrcConnect ircConnect;
 
         //creates a thread for the pinger
-        public Pinger()
+        public Pinger(SimpleIRC sirc, IrcConnect ircCon)
         {
+            simpleirc = sirc;
+            ircConnect = ircCon;
             pingSender = new Thread(new ThreadStart(this.Run));
         }
         //starts the ping thread
@@ -23,17 +22,12 @@ namespace SimpleIRCLib
         {
             pingSender.Start();
         }
-
-        public void Stop()
-        {
-            pingSender.Abort();
-        }
         //function that runs in the ping thread, used to keep the connection with the irc server alive
-        public void Run()
+        private void Run()
         {
-            while (true)
+            while (!simpleirc.shouldClientStop)
             {
-                IrcConnect.writeIrc(ping + IrcConnect.newIP);
+                ircConnect.writeIrc(ping + ircConnect.newIP);
                 Thread.Sleep(15000);
             }
         }
