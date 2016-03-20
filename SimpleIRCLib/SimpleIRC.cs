@@ -159,7 +159,12 @@ namespace SimpleIRCLib
             else if (whichdownloaddetail == "status")
             {
                 return dlDetails[11];
-            } else
+            }
+            else if (whichdownloaddetail == "size")
+            {
+                return dlDetails[2];
+            }
+            else
             {
                 return null;
             }
