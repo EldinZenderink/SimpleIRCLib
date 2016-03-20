@@ -19,23 +19,26 @@ namespace SimpleIRCLib
         //global var to check if connection is establised
         public bool isConnectionEstablised { get; set; }
 
+
+        //for dcc downloader, information about dcc
+        public string packNumber { get; set; }
+        public string bot { get; set; }
+
         //all seperate classes initialized
         private DCCClient dcc { get; set; }
         private SimpleIRC simpleirc { get; set; }
         private Pinger ping;
-        
+
         //connection 
         private StreamReader reader;
         private NetworkStream stream;
         private TcpClient irc;
         private static StreamWriter writer;
 
-        //for dcc downloader, information about dcc
-        public string packNumber { get; set; }
-        public string bot { get; set; }
-
         //async task for receiving messages from the server
         private Task receiverTask = null;
+
+        private bool stopTask = false;
 
         //Overload Constructor - safe way to get variables
         public IrcConnect(string IP, int Port, string Username, string Password, string Channel, SimpleIRC sirc)
@@ -73,11 +76,9 @@ namespace SimpleIRCLib
                 receiverTask = new Task(StartReceivingChat);
                 receiverTask.Start();
                 receiverTask.Wait();
-
-
                 return true;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 simpleirc.DebugCallBack("Error Connecting to IRC Server: \n " + e.ToString());
                 return false;
@@ -87,16 +88,26 @@ namespace SimpleIRCLib
 
         public void quitConnect()
         {
+            simpleirc.DebugCallBack("\n STARTING QUITING PROCEDURE ");
+
             //send quit to server
             writeIrc("QUIT");
-            
+
+            simpleirc.shouldClientStop = true;
+            stopTask = true;
+            simpleirc.DebugCallBack("\n WRITTEN QUIT ");
+            Thread.Sleep(200);
             //stop everything in right order
-            reader.Close();
+
+            ping.Stop();
+            receiverTask.Dispose();
+            reader.Dispose();
+            stream.Close();
             writer.Close();
             irc.Close();
-            receiverTask.Dispose();
+
+            simpleirc.DebugCallBack("\n CLOSED EVERY THING ");
             isConnectionEstablised = false;
-            simpleirc.shouldClientStop = false;
 
         }
 
@@ -108,8 +119,9 @@ namespace SimpleIRCLib
         private async Task ReceiveChat()
         {
             string ircData;
-            try {
-                while ((ircData = reader.ReadLine()) != null && !simpleirc.shouldClientStop)
+            try
+            {
+                while ((ircData = reader.ReadLine()) != null && !simpleirc.shouldClientStop && !stopTask)
                 {
                     string userName;
                     string messageFromUser;
@@ -164,7 +176,6 @@ namespace SimpleIRCLib
                         {
                             userName = matches1.Value;
                             simpleirc.chatOutput(userName, "QUITED");
-                            quitConnect();
                         }
                     }
 
@@ -183,12 +194,19 @@ namespace SimpleIRCLib
                     }
                     Thread.Sleep(1);
                 }
-            } catch (Exception ioex)
+                simpleirc.DebugCallBack("\n STOPPED RECEIVER: ");
+                stopTask = false;
+            }
+            catch (Exception ioex)
             {
                 simpleirc.DebugCallBack("ERROR: LOST CONNECTION TO SERVER PROBABLY. \n" + ioex.ToString() + "\n");
-                quitConnect();
+                if (isConnectionEstablised)
+                {
+                    stopTask = false;
+                    quitConnect();
+                }
             }
-        }   
+        }
 
         public object[] passDownloadDetails()
         {
@@ -209,7 +227,8 @@ namespace SimpleIRCLib
                 downloadDetails[10] = dcc.Progress;
                 downloadDetails[11] = dcc.Status;
                 return downloadDetails;
-            } else
+            }
+            else
             {
                 object[] downloadDetails = new object[12];
 
@@ -227,7 +246,7 @@ namespace SimpleIRCLib
                 downloadDetails[11] = dcc.Status;
                 return downloadDetails;
             }
-            
+
         }
 
         // parse message to send
@@ -246,8 +265,8 @@ namespace SimpleIRCLib
 
             if (matches1.Success)
             {
-                bot = matches1.Groups["botname"].Value.Trim(); 
-                packNumber = matches1.Groups["packnum"].Value.Trim(); 
+                bot = matches1.Groups["botname"].Value.Trim();
+                packNumber = matches1.Groups["packnum"].Value.Trim();
                 string xdccdl = "PRIVMSG " + bot + " :XDCC SEND " + packNumber;
                 simpleirc.DebugCallBack("XDCC FOUND: " + xdccdl + "\n");
                 writeIrc(xdccdl);
@@ -267,9 +286,9 @@ namespace SimpleIRCLib
                 simpleirc.DebugCallBack("XDCC REMOVED");
                 writeIrc(xdccdl);
             }
-            else if(Input.ToLower().Contains("/quit"))
+            else if (Input.ToLower().Contains("/quit"))
             {
-                writeIrc("QUIT");
+                simpleirc.DebugCallBack("STARTED QUITTING");
                 quitConnect();
             }
             else
@@ -277,19 +296,20 @@ namespace SimpleIRCLib
                 writeIrc("PRIVMSG " + newChannel + " :" + Input);
             }
 
-            simpleirc.chatOutput(newUsername,  Input);
+            simpleirc.chatOutput(newUsername, Input);
         }
 
         //function to write to the irc server, bit easier to use and better looking
         public void writeIrc(string input)
         {
-            if (writer != null) {
-
+            if (writer.BaseStream != null)
+            {
                 writer.WriteLine(input);
                 writer.Flush();
-            } else
+            }
+            else
             {
-                simpleirc.DebugCallBack("Could not send message, irc client is not running :X, error: \n");
+                simpleirc.DebugCallBack("Could not send message" + input + ", irc client is not running :X, error: \n");
             }
         }
     }

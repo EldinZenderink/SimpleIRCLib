@@ -22,6 +22,21 @@ namespace SimpleIRCLib
         {
             pingSender.Start();
         }
+
+        //starts the ping thread
+        public void Stop()
+        {
+            if (pingSender.IsAlive)
+            {
+                pingSender.Abort();
+                simpleirc.DebugCallBack("\n STOPPED PINGER BY ABORTING: ");
+            }
+            else
+            {
+                simpleirc.DebugCallBack("Pinger stopped already :X \n");
+            }
+
+        }
         //function that runs in the ping thread, used to keep the connection with the irc server alive
         private void Run()
         {
@@ -30,6 +45,7 @@ namespace SimpleIRCLib
                 ircConnect.writeIrc(ping + ircConnect.newIP);
                 Thread.Sleep(15000);
             }
+            simpleirc.DebugCallBack("\n STOPPED PINGER: ");
         }
     }
 }

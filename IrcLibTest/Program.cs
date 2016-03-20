@@ -61,16 +61,22 @@ namespace IrcLibTest
             irc.setDebugCallback(debugOutputCallback);
             irc.startClient();
             irc.setDownloadStatusChangeCallback(downloadStatusChanged);
-          
+
             while (true)
             {
-               
+
                 string Input = Console.ReadLine();
                 if (Input != null || Input != "" || Input != String.Empty)
                 {
                     irc.sendMessage(Input);
                 }
-               
+                if (!irc.isClientRunning())
+                {
+
+                    Console.WriteLine("CLIENT NOT RUNNING :S");
+                    break;
+                }
+
             }
         }
 
