@@ -129,7 +129,7 @@ Array that will be returned when downloading:
 | ------------- |:-------------:| ----- |
 | dccstring     | DCC receive string     | The bot sends you a string with connection details.|
 | filename      | Filename               | Filename of the file that you currently are downloading. |
-| size          | Filesize               | Size of the file that you currently  are downloading.|
+| size          | Filesize               | Size of the file that you currently  are downloading. (In bytes)|
 | ip            | Server IP              | IP from the file server to which you have connected. |
 | port          | Server Port            | Port from the file server to which you have connected. |
 | pack          | Pack Number            | Packnumer corresponding to the file you have requested through XDCC.|
@@ -154,6 +154,7 @@ I will try to fix (significant) bugs as quick as possible, but due to my study t
 
 ### Todos
 
+- MONO :D
 - Some DCC fixes, most things seem to work, but there are some odd cases where it might not work.
 - More readable code (getting better)
 - Renaming some stupidly named names 
