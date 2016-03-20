@@ -130,10 +130,10 @@ namespace SimpleIRCLib
                     {
 
                         Regex regex1 = new Regex(@"(?=.*(?<message>((?<=\b(?m)\s" + newChannel + " :).*$)))(?<user>(?<=:)(.*\n?)(?=!~))");
-                        Match matches1 = regex1.Match(ircData);
+                        Match matches1 = regex1.Match(ircData.ToLower());
 
                         Regex regex2 = new Regex(@"(?=.*(?<message>((?<=\b(?m)\s" + newUsername + " :).*$)))(?<user>(?<=:)(.*\n?)(?=!~))");
-                        Match matches2 = regex2.Match(ircData);
+                        Match matches2 = regex2.Match(ircData.ToLower());
 
                         if (matches1.Success)
                         {
