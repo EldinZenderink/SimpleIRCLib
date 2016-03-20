@@ -145,7 +145,7 @@ namespace SimpleIRCLib
                     else if (ircData.Contains("JOIN"))
                     {
 
-                        Regex regex1 = new Regex(@"(?<user>(?<=:)(.*\n?)(?=!~)");
+                        Regex regex1 = new Regex(@"(?<user>(?<=:)(.*\n?)(?=!~))");
                         Match matches1 = regex1.Match(ircData);
 
                         if (matches1.Success)
@@ -157,7 +157,7 @@ namespace SimpleIRCLib
                     }
                     else if (ircData.Contains("QUIT"))
                     {
-                        Regex regex1 = new Regex(@"(?<user>(?<=:)(.*\n?)(?=!~)");
+                        Regex regex1 = new Regex(@"(?<user>(?<=:)(.*\n?)(?=!~))");
                         Match matches1 = regex1.Match(ircData);
 
                         if (matches1.Success)
