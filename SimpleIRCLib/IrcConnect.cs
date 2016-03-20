@@ -164,6 +164,7 @@ namespace SimpleIRCLib
                         {
                             userName = matches1.Value;
                             simpleirc.chatOutput(userName, "QUITED");
+                            quitConnect();
                         }
                     }
 
