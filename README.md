@@ -52,7 +52,8 @@ It's main features are:
 
 1.1.9:
 - bugfixes, see commit description
-- 
+
+ 
 ### Usage - Console Application
 
 *TIP: If you do not want a seperate DLL file with your program you can either copy the .cs files to your solution/project and manually change the Namespace, or you can use a program called [ILMerge](https://www.microsoft.com/en-us/download/details.aspx?id=17630) to combine a exe and dll together(not tested)!*
