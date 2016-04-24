@@ -26,12 +26,10 @@ namespace SimpleIRCLib
         //starts the ping thread
         public void Stop()
         {
-            if (pingSender.IsAlive)
-            {
+            if (pingSender.IsAlive) {
                 pingSender.Abort();
                 simpleirc.DebugCallBack("\n STOPPED PINGER BY ABORTING: ");
-            }
-            else
+            } else
             {
                 simpleirc.DebugCallBack("Pinger stopped already :X \n");
             }

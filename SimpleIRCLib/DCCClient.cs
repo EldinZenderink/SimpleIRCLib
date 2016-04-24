@@ -113,7 +113,11 @@ namespace SimpleIRCLib
                 //convert bitwise ip to normal ip
                 try
                 {
-                    int newIpBW = Convert.ToInt32(matches.Groups["bitwiseip"].Value.Trim());
+                    newFileName = Regex.Replace(regEx.Replace(newFileName, ""), @"\s+", " ");
+                    simpleirc.DebugCallBack("New Filename: " + newFileName + "\n");
+
+                    simpleirc.DebugCallBack(" newIpBW: " + matches.Groups["bitwiseip"].Value.Trim() + "\n");
+                    long newIpBW = Convert.ToInt64(matches.Groups["bitwiseip"].Value.Trim());
                     IPEndPoint hostIPEndPoint = new IPEndPoint(newIpBW, newPortNum);
                     string[] ipadressinfoparts = hostIPEndPoint.ToString().Split(':');
                     string[] ipnumbers = ipadressinfoparts[0].Split('.');
@@ -142,6 +146,11 @@ namespace SimpleIRCLib
             updateStatus("WAITING");
 
             //combining download directory path with filename
+
+            if (!Directory.Exists(curDownloadDir))
+            {
+                Directory.CreateDirectory(curDownloadDir);
+            } 
             string[] pathToCombine = new string[] { curDownloadDir, newFileName };
             string dlDirAndFileName = Path.Combine(pathToCombine);
 
@@ -173,7 +182,7 @@ namespace SimpleIRCLib
                             byte[] buffer = new byte[1048576];
 
                             //create file to write to
-                            using (FileStream writeStream = new FileStream(dlDirAndFileName, FileMode.Append, FileAccess.Write))
+                            using (FileStream writeStream = new FileStream(dlDirAndFileName, FileMode.Append, FileAccess.Write, FileShare.Read))
                             {
                                 isDownloading = true;
                                 //download while connected and filesize is not reached

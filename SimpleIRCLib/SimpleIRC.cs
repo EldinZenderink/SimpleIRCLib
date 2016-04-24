@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+
 namespace SimpleIRCLib
 {
     // This project can output the Class library as a NuGet Package.
@@ -54,6 +55,7 @@ namespace SimpleIRCLib
             chatOutput = chatoutput;
             DebugCallBack = null;
             downloadStatusChange = null;
+            shouldClientStop = false;
             downloadDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
         }
 
@@ -100,16 +102,34 @@ namespace SimpleIRCLib
 
         public bool isClientRunning()
         {
-            return con.isConnectionEstablised;
+            try
+            {
+                return con.isConnectionEstablised;
+            } catch
+            {
+                return false;
+            }
         }
 
-        public void stopClient()
+        public bool stopClient()
         {
             //execute quit stuff
-            if (con.isConnectionEstablised)
+            try
             {
-                shouldClientStop = true;
+                if (con.isConnectionEstablised)
+                {
+                    shouldClientStop = true;
+                    con.quitConnect();
+                    return true;
+                } else
+                {
+                    return false;
+                }
+            } catch
+            {
+                return false;
             }
+            
         }
 
         //gets the download details by defining which detail you want
@@ -171,11 +191,22 @@ namespace SimpleIRCLib
 
         }
         //send message
-        public void sendMessage(string message)
+        public bool sendMessage(string message)
         {
-            if (con.isConnectionEstablised) {
-                con.sendMsg(message);
-            }            
+            try
+            {
+                if (con.isConnectionEstablised)
+                {
+                    con.sendMsg(message);
+                    return true;
+                } else
+                {
+                    return false;
+                }
+            } catch {
+                return false;
+            }
+                      
         }
 
     }
