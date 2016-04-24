@@ -44,6 +44,13 @@ It's main features are:
 - getDownloadProgress/downloadStatusChangedCallback has different way of operation (see below)
 - addes status attribute for downloadstatus/progress
 
+1.1.3 -> 1.1.7:
+- stability issues fixed
+
+1.1.8:
+- bugfixes, see commit notes
+
+
 ### Usage - Console Application
 
 *TIP: If you do not want a seperate DLL file with your program you can either copy the .cs files to your solution/project and manually change the Namespace, or you can use a program called [ILMerge](https://www.microsoft.com/en-us/download/details.aspx?id=17630) to combine a exe and dll together(not tested)!*
