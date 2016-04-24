@@ -33,7 +33,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="SimpleIRCLib">
+    <Reference Include="SimpleIRCLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\SimpleIRCLib\bin\Debug\SimpleIRCLib.dll</HintPath>
     </Reference>
     <Reference Include="System" />

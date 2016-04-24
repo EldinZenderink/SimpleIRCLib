@@ -179,7 +179,25 @@ namespace SimpleIRCLib
                             int count;
 
                             //to me this buffer size seemed to be the most efficient.
-                            byte[] buffer = new byte[1048576];
+                            byte[] buffer;
+                            if (newFileSize > 1048576)
+                            {
+                                simpleirc.DebugCallBack("DCC Downloader: Big file, big buffer (1 mb) \n ");
+                                buffer = new byte[1048576];
+                            } else if(newFileSize < 1048576 && newFileSize > 2048)
+                            {
+                                simpleirc.DebugCallBack("DCC Downloader: Smaller file (< 1 mb), smaller buffer (2 kb) \n ");
+                                buffer = new byte[2048];
+                            } else if (newFileSize < 2048 && newFileSize > 128)
+                            {
+                                simpleirc.DebugCallBack("DCC Downloader: Small file (< 2kb mb), small buffer (128 b) \n ");
+                                buffer = new byte[128];
+                            } else
+                            {
+                                simpleirc.DebugCallBack("DCC Downloader: Tiny file (< 128 b), tiny buffer (2 b) \n ");
+                                buffer = new byte[2];
+                            }
+                                
 
                             //create file to write to
                             using (FileStream writeStream = new FileStream(dlDirAndFileName, FileMode.Append, FileAccess.Write, FileShare.Read))
@@ -194,7 +212,6 @@ namespace SimpleIRCLib
                                     {
 
                                         Bytes_Seconds = bytesReceived - oldBytesReceived;
-                                        Progress = (int)(bytesReceived / oneprocent);
                                         KBytes_Seconds = (int)(Bytes_Seconds / 1024);
                                         MBytes_Seconds = (KBytes_Seconds / 1024);
                                         oldBytesReceived = bytesReceived;
@@ -211,6 +228,7 @@ namespace SimpleIRCLib
                                     //count bytes received
                                     bytesReceived += count;
 
+                                    Progress = (int)(bytesReceived / oneprocent);
                                     //check if data is still available, to avoid stalling of download thread
                                     int timeOut = 0;
                                     while (!dlstream.DataAvailable)

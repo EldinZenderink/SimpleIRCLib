@@ -125,31 +125,42 @@ namespace SimpleIRCLib
                     string userName;
                     string messageFromUser;
                     isConnectionEstablised = true;
-                    if (ircData.Contains("PRIVMSG"))
+                    if (ircData.Contains("PRIVMSG") && !ircData.ToLower().Contains("callerid") && !ircData.ToLower().Contains("chantypes") && !ircData.ToLower().Contains("version"))
                     {
 
-                        Regex regex1 = new Regex(@"(?=.*(?<message>((?<=\b(?m)\s" + newChannel + " :).*$)))(?<user>(?<=:)(.*\n?)(?=!~))");
-                        Match matches1 = regex1.Match(ircData.ToLower());
+                        Regex regex1 = new Regex(@"(?=.*(?<message>((?<=\b(?m)\s" + newChannel + ").*$)))(?<user>(?<=:)(.*\n?)(?=!~))");
+                        Match matches1 = regex1.Match(ircData);
 
-                        Regex regex2 = new Regex(@"(?=.*(?<message>((?<=\b(?m)\s" + newUsername + " :).*$)))(?<user>(?<=:)(.*\n?)(?=!~))");
-                        Match matches2 = regex2.Match(ircData.ToLower());
+                        Regex regex2 = new Regex(@"(?=.*(?<message>((?<=\b(?m)\s" + newUsername + ").*$)))(?<user>(?<=:)(.*\n?))");
+                        Match matches2 = regex2.Match(ircData);
 
                         if (matches1.Success)
                         {
+                            simpleirc.DebugCallBack("RAW SERVER DATA 1: " + ircData + "\n");
                             userName = matches1.Groups["user"].Value;
-                            messageFromUser = matches1.Groups["message"].Value;
+                            messageFromUser = matches1.Groups["message"].Value.Trim().Substring(1);
                             simpleirc.chatOutput(userName, messageFromUser);
                         }
                         else if (matches2.Success)
                         {
+                            simpleirc.DebugCallBack("RAW SERVER DATA 2: " + ircData + "\n");
                             userName = matches2.Groups["user"].Value;
-                            messageFromUser = matches2.Groups["message"].Value;
+                            messageFromUser = matches2.Groups["message"].Value.Trim().Substring(1);
                             simpleirc.chatOutput(userName, messageFromUser);
                         }
                         else
                         {
-                            simpleirc.DebugCallBack("RAW SERVER DATA: " + ircData + "\n");
+                            simpleirc.DebugCallBack("RAW SERVER DATA 3: " + ircData + "\n");
                             simpleirc.DebugCallBack("CHANNEL : " + newChannel + "\n");
+                            simpleirc.DebugCallBack("DOING IT THE OLD FASHIONED STRING SPLIT WAY\n");
+
+                            string[] messageSplitFromData = ircData.Split(new string[] { newChannel }, StringSplitOptions.None);
+                            string message = messageSplitFromData[messageSplitFromData.Length - 1];
+
+                            string user = messageSplitFromData[0].Split('!')[0].Substring(1);
+
+                            simpleirc.chatOutput(user, message);
+
                         }
 
                     }
