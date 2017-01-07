@@ -24,6 +24,7 @@ namespace SimpleIRCLib
         public string botName { get; set; }
         public string packNum { get; set; }
         public bool isDownloading { get; set; }
+        public string currentFilePath { get; set; }
 
         //class linking of some sort
         private SimpleIRC simpleirc;
@@ -61,6 +62,7 @@ namespace SimpleIRCLib
                 {
                     //start the downloader thread
                     downloader = new Thread(new ThreadStart(this.Downloader));
+                    downloader.IsBackground = true;
                     downloader.Start();
                 }
                 else
@@ -153,7 +155,7 @@ namespace SimpleIRCLib
             } 
             string[] pathToCombine = new string[] { curDownloadDir, newFileName };
             string dlDirAndFileName = Path.Combine(pathToCombine);
-
+            currentFilePath = dlDirAndFileName;
             try
             {
                 if (!File.Exists(dlDirAndFileName))
@@ -183,7 +185,7 @@ namespace SimpleIRCLib
                             if (newFileSize > 1048576)
                             {
                                 simpleirc.DebugCallBack("DCC Downloader: Big file, big buffer (1 mb) \n ");
-                                buffer = new byte[1048576];
+                                buffer = new byte[16384];
                             } else if(newFileSize < 1048576 && newFileSize > 2048)
                             {
                                 simpleirc.DebugCallBack("DCC Downloader: Smaller file (< 1 mb), smaller buffer (2 kb) \n ");
@@ -202,6 +204,7 @@ namespace SimpleIRCLib
                             //create file to write to
                             using (FileStream writeStream = new FileStream(dlDirAndFileName, FileMode.Append, FileAccess.Write, FileShare.Read))
                             {
+                                writeStream.SetLength(newFileSize);
                                 isDownloading = true;
                                 //download while connected and filesize is not reached
                                 while (dltcp.Connected && bytesReceived < newFileSize && !simpleirc.shouldClientStop)
@@ -263,6 +266,7 @@ namespace SimpleIRCLib
                                 {
                                     updateStatus("FAILED");
                                     simpleirc.DebugCallBack("Download stopped at < 95 % finished, deleting file: " + newFileName + " \n");
+                                    simpleirc.DebugCallBack("Download stopped at : " + bytesReceived + " bytes, a total of " + Progress + "%");
                                     File.Delete(dlDirAndFileName);
                                     timedOut = false;
                                 }
@@ -270,6 +274,7 @@ namespace SimpleIRCLib
                                 {
                                     updateStatus("FAILED: TIMED OUT");
                                     simpleirc.DebugCallBack("Download timed out at < 95 % finished, deleting file: " + newFileName + " \n");
+                                    simpleirc.DebugCallBack("Download stopped at : " + bytesReceived + " bytes, a total of " + Progress + "%");
                                     File.Delete(dlDirAndFileName);
                                     timedOut = false;
                                 } else
@@ -320,6 +325,13 @@ namespace SimpleIRCLib
             isDownloading = false;
             updateStatus("ABORTED");
             downloader.Abort();
+            try
+            {
+                File.Delete(currentFilePath);
+            } catch (Exception e)
+            {
+                simpleirc.DebugCallBack("File " + currentFilePath + " probably doesn't exist :X");
+            }
         }
     }
 }

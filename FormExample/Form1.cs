@@ -4,6 +4,7 @@ using System.IO;
 using System.Diagnostics;
 //the library
 using SimpleIRCLib;
+using System.Collections.Generic;
 
 namespace FormExample
 {
@@ -15,6 +16,8 @@ namespace FormExample
         //initiate debugform
         public DebugForm debugForm = new DebugForm();
        
+
+
         public string defaultDownloadDirectory = "";
 
         public Form1()
@@ -46,6 +49,9 @@ namespace FormExample
 
                     //sets the download dir to where the application runs
                     irc.setCustomDownloadDir(defaultDownloadDirectory);
+
+                    //set callback when the list with users arrives
+                    irc.setUserListReceivedCallback(UserListReceived);
 
                     //Start client
                     irc.startClient();
@@ -113,6 +119,26 @@ namespace FormExample
             } else
             {
                 this.ChatOutput.AppendText(user + " : " + message + "\n");
+            }
+        }
+
+        /// <summary>
+        ///  Adds all users from channel to the list
+        /// </summary>
+        /// <param name="list"></param>
+        private void UserListReceived(string[] list)
+        {
+            if (this.ChatOutput.InvokeRequired)
+            {
+                this.ChatOutput.Invoke(new MethodInvoker(() => UserListReceived(list)));
+            }
+            else
+            {
+                this.UserList.Items.Clear();
+                foreach (string user in list)
+                {
+                    this.UserList.Items.Add(user);
+                }               
             }
         }
 
@@ -259,6 +285,20 @@ namespace FormExample
             if (irc.isClientRunning())
             {
                 irc.stopClient();
+            }
+        }
+
+        /// <summary>
+        /// Gets the users in the current channel.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void UpdateUserList_Click(object sender, EventArgs e)
+        {
+            this.UserList.Items.Clear();
+            if (irc.isClientRunning())
+            {
+                irc.getUsersInCurrentChannel();
             }
         }
     }

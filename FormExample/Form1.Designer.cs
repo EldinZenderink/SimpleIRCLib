@@ -50,6 +50,8 @@
             this.label5 = new System.Windows.Forms.Label();
             this.DownloadProgressBar = new System.Windows.Forms.ProgressBar();
             this.OpenFolderDialog = new System.Windows.Forms.FolderBrowserDialog();
+            this.UserList = new System.Windows.Forms.ListBox();
+            this.UpdateUserList = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // ServerInput
@@ -227,11 +229,32 @@
             this.DownloadProgressBar.Size = new System.Drawing.Size(502, 23);
             this.DownloadProgressBar.TabIndex = 19;
             // 
+            // UserList
+            // 
+            this.UserList.FormattingEnabled = true;
+            this.UserList.Location = new System.Drawing.Point(581, 37);
+            this.UserList.Name = "UserList";
+            this.UserList.ScrollAlwaysVisible = true;
+            this.UserList.Size = new System.Drawing.Size(229, 446);
+            this.UserList.TabIndex = 20;
+            // 
+            // UpdateUserList
+            // 
+            this.UpdateUserList.Location = new System.Drawing.Point(581, 503);
+            this.UpdateUserList.Name = "UpdateUserList";
+            this.UpdateUserList.Size = new System.Drawing.Size(229, 23);
+            this.UpdateUserList.TabIndex = 21;
+            this.UpdateUserList.Text = "Update User List";
+            this.UpdateUserList.UseVisualStyleBackColor = true;
+            this.UpdateUserList.Click += new System.EventHandler(this.UpdateUserList_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(613, 530);
+            this.ClientSize = new System.Drawing.Size(822, 530);
+            this.Controls.Add(this.UpdateUserList);
+            this.Controls.Add(this.UserList);
             this.Controls.Add(this.DownloadProgressBar);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
@@ -284,6 +307,8 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.ProgressBar DownloadProgressBar;
         private System.Windows.Forms.FolderBrowserDialog OpenFolderDialog;
+        private System.Windows.Forms.ListBox UserList;
+        private System.Windows.Forms.Button UpdateUserList;
     }
 }
 

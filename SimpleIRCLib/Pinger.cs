@@ -16,6 +16,7 @@ namespace SimpleIRCLib
             simpleirc = sirc;
             ircConnect = ircCon;
             pingSender = new Thread(new ThreadStart(this.Run));
+            pingSender.IsBackground = true;
         }
         //starts the ping thread
         public void Start()
