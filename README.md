@@ -15,7 +15,7 @@ It's main features are:
 [NuGet Package](https://www.nuget.org/packages/SimpleIRCLib)
 
 ### Direct Download DLL
-[DLL](https://github.com/EldinZenderink/SimpleIRCLib/raw/master/SimpleIRCLib/bin/Debug/SimpleIRCLib.dll)
+[DLL](https://github.com/EldinZenderink/SimpleIRCLib/raw/master/Library/SimpleIRCLib.dll)
 
 ### Version
 1.0.0:
@@ -53,6 +53,9 @@ It's main features are:
 1.1.9:
 - bugfixes, see commit description
 
+1.2.0
+- Functionality update: Added method to retreive all the users in the current channel, as well as in other channels (but most of them will be hidden, so not very usefull ^^).
+
  
 ### Usage - Console Application
 
@@ -67,7 +70,10 @@ This is a list with the most important methods available to you:
     (void)        startClient();
     (void)        stopClient();
     (bool)        isClientRunning();
+    (bool)        stopXDCCDownload(); 
     (object)      getDownloadProgress(string whichdownloaddetail) //see below
+    (void)        getUsersInCurrentChannel();
+    (void)        getUsersInDifferentChannel(string channel)
     (void)        sendMessage(message); 
     (string)      newUsername;            //is now string field instead of method
     (string)      newChannel;             //is now string field instead of method
@@ -83,6 +89,7 @@ After doing that, add the following code to start your irc client:
     irc.setupIrc(ip, port, username, password, channel, chatOutputCallback);
     irc.setDebugCallback(debugOutputCallback);
     irc.setDownloadStatusChangedCallback(downloadStatusCallback);
+    irc.setUserListReceivedCallback(userListReceivedCallback);
     irc.startClient();
     
 Your callbacks should/could look like this:
@@ -112,6 +119,15 @@ Your callbacks should/could look like this:
          Object speedkbps = getDownloadProgress("kbps");
          Object status = getDownloadProgress("status");
          Object filename = getDownloadProgress("filename");
+    }
+
+**userListReceivedCallback**
+
+    void downloadStatusCallback(string[] users) //see below for definition of each index in this array
+    {
+         foreach(string user in users){
+            Console.WriteLine(user);            
+         }
     }
     
 
