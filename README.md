@@ -123,7 +123,7 @@ Your callbacks should/could look like this:
 
 **userListReceivedCallback**
 
-    void downloadStatusCallback(string[] users) //see below for definition of each index in this array
+    void userListReceivedCallback(string[] users) //see below for definition of each index in this array
     {
          foreach(string user in users){
             Console.WriteLine(user);            
