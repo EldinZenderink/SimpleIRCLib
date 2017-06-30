@@ -88,7 +88,7 @@ After doing that, add the following code to start your irc client:
     SimpleIRC irc = new SimpleIRC();
     irc.setupIrc(ip, port, username, password, channel, chatOutputCallback);
     irc.setDebugCallback(debugOutputCallback);
-    irc.setDownloadStatusChangedCallback(downloadStatusCallback);
+    irc.setDownloadStatusChangeCallback(downloadStatusCallback);
     irc.setUserListReceivedCallback(userListReceivedCallback);
     irc.startClient();
     
@@ -115,10 +115,10 @@ Your callbacks should/could look like this:
 
     void downloadStatusCallback() //see below for definition of each index in this array
     {
-         Object information = getDownloadProgress("progress");
-         Object speedkbps = getDownloadProgress("kbps");
-         Object status = getDownloadProgress("status");
-         Object filename = getDownloadProgress("filename");
+         Object information = irc.getDownloadProgress("progress");
+         Object speedkbps = irc.getDownloadProgress("kbps");
+         Object status = irc.getDownloadProgress("status");
+         Object filename = irc.getDownloadProgress("filename");
     }
 
 **userListReceivedCallback**
