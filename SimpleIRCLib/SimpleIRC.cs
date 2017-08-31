@@ -19,6 +19,9 @@ namespace SimpleIRCLib
         //sets the method to be called when there is a chat message to be shown
         public Action<string, string> chatOutput;
 
+        //sets the method to be called when there is a message from the irc server, completely raw, so you can do your own stuff.
+        public Action<string> rawOutput;
+
         //sets the download folder for the current download and following downloads (can be changed when instance is running)
         public string downloadDir { get; set; }
 
@@ -107,6 +110,15 @@ namespace SimpleIRCLib
         public void setUserListReceivedCallback(Action<string[]> callback)
         {
             UsersListReceived = callback;
+        }
+
+        /// <summary>
+        /// Sets the download directory for dcc downloads.
+        /// </summary>
+        /// <param name="downloaddir"> Requires a path to a directory of type string as parameter.</param>
+        public void setRawOutput(Action<string> rawoutput)
+        {
+            rawOutput = rawoutput;
         }
 
         /// <summary>
@@ -292,6 +304,27 @@ namespace SimpleIRCLib
                 return false;
             }
                       
+        }
+
+        public bool sendRawMessage(string message)
+        {
+            try
+            {
+                if (con.isConnectionEstablised)
+                {
+                    con.sendRawMsg(message);
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch
+            {
+                return false;
+            }
+
         }
 
     }

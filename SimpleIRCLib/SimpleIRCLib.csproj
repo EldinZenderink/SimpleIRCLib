@@ -45,7 +45,6 @@
   <ItemGroup>
     <Compile Include="DCCClient.cs" />
     <Compile Include="IrcConnect.cs" />
-    <Compile Include="Pinger.cs" />
     <Compile Include="SimpleIRC.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

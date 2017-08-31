@@ -25,6 +25,7 @@ namespace SimpleIRCLib
         public string packNum { get; set; }
         public bool isDownloading { get; set; }
         public string currentFilePath { get; set; }
+        public int retries = 0;
 
         //class linking of some sort
         private SimpleIRC simpleirc;
@@ -71,6 +72,7 @@ namespace SimpleIRCLib
                     ircConnect.sendMsg("/msg " + botName + " xdcc remove " + packNum);
                     ircConnect.sendMsg("/msg " + botName + " xdcc cancel");
                 }
+                retries = 0;
             }
             else
             {
@@ -262,22 +264,24 @@ namespace SimpleIRCLib
                                 writeStream.Close();
 
                                 //consider 95% downloaded as done, files are sequentually downloaded, sometimes download stops early, but the file still is usable
-                                if (Progress < 95)
+                                if (Progress < 95 && !simpleirc.shouldClientStop)
                                 {
                                     updateStatus("FAILED");
                                     simpleirc.DebugCallBack("Download stopped at < 95 % finished, deleting file: " + newFileName + " \n");
                                     simpleirc.DebugCallBack("Download stopped at : " + bytesReceived + " bytes, a total of " + Progress + "%");
                                     File.Delete(dlDirAndFileName);
                                     timedOut = false;
+
+
                                 }
-                                else if (timedOut && Progress < 95)
+                                else if (timedOut && Progress < 95 && !simpleirc.shouldClientStop)
                                 {
                                     updateStatus("FAILED: TIMED OUT");
                                     simpleirc.DebugCallBack("Download timed out at < 95 % finished, deleting file: " + newFileName + " \n");
                                     simpleirc.DebugCallBack("Download stopped at : " + bytesReceived + " bytes, a total of " + Progress + "%");
                                     File.Delete(dlDirAndFileName);
                                     timedOut = false;
-                                } else
+                                } else if(!simpleirc.shouldClientStop)
                                 {
                                     updateStatus("COMPLETED");
                                 }
@@ -290,7 +294,7 @@ namespace SimpleIRCLib
                     simpleirc.DebugCallBack("File already exists, removing from xdcc que!\n");
                     ircConnect.sendMsg("/msg " + botName + " xdcc remove " + packNum);
                     ircConnect.sendMsg("/msg " + botName + " xdcc cancel");
-                    updateStatus("ALREADY EXISTS");
+                    updateStatus("FAILED: ALREADY EXISTS");
                 }
                 simpleirc.DebugCallBack("File has been downloaded! \n File Location:" + dlDirAndFileName);
             }
@@ -323,8 +327,9 @@ namespace SimpleIRCLib
         {
             simpleirc.DebugCallBack("Downloader Stopped");
             isDownloading = false;
-            updateStatus("ABORTED");
             downloader.Abort();
+
+            updateStatus("ABORTED");
             try
             {
                 File.Delete(currentFilePath);

@@ -28,8 +28,7 @@ namespace SimpleIRCLib
         //all seperate classes initialized
         private DCCClient dcc { get; set; }
         private SimpleIRC simpleirc { get; set; }
-        private Pinger ping;
-        
+
         //connection 
         private StreamReader reader;
         private NetworkStream stream;
@@ -69,18 +68,24 @@ namespace SimpleIRCLib
                 reader = new StreamReader(stream);
                 writer = new StreamWriter(stream);
 
-                ping = new Pinger(simpleirc, this);
-                ping.Start();
-
-                writeIrc("USER " + newUsername + " 8 * : Testing RareAMVS C# irc client");
-                writeIrc("NICK " + newUsername);
-                writeIrc("JOIN " + newChannel);
-
-                simpleirc.DebugCallBack("succesful connected to the irc server!");
-
                 receiverTask = new Task(StartReceivingChat);
                 receiverTask.Start();
                 receiverTask.Wait();
+                if(newPassword.Length > 0)
+                {
+                    writeIrc("PASS " + newPassword);
+                    Thread.Sleep(100);
+                }
+
+                writeIrc("USER " + newUsername + " 8 * :" + newUsername + "_SimpleIRCLib");
+                Thread.Sleep(500);
+                writeIrc("NICK " + newUsername);
+                Thread.Sleep(500);
+                writeIrc("JOIN 0");
+                Thread.Sleep(500);
+                writeIrc("JOIN " + newChannel);
+                Thread.Sleep(500);
+                simpleirc.DebugCallBack("succesful connected to the irc server!");
                 return true;
             }
             catch(Exception e)
@@ -103,8 +108,6 @@ namespace SimpleIRCLib
             simpleirc.DebugCallBack("\n WRITTEN QUIT ");
             Thread.Sleep(200);
             //stop everything in right order
-
-            ping.Stop();
             receiverTask.Dispose();
             reader.Dispose();
             stream.Close();
@@ -130,43 +133,41 @@ namespace SimpleIRCLib
                     string userName;
                     string messageFromUser;
                     isConnectionEstablised = true;
-                    if (ircData.Contains("PRIVMSG") && !ircData.ToLower().Contains("callerid") && !ircData.ToLower().Contains("chantypes") && !ircData.ToLower().Contains("version"))
+                    try
+                    {
+                        simpleirc.rawOutput(ircData);
+                    }
+                    catch
                     {
 
-                        Regex regex1 = new Regex(@"(?=.*(?<message>((?<=\b(?m)\s" + newChannel + ").*$)))(?<user>(?<=:)(.*\n?)(?=!~))");
-                        Match matches1 = regex1.Match(ircData);
+                    }
 
-                        Regex regex2 = new Regex(@"(?=.*(?<message>((?<=\b(?m)\s" + newUsername + ").*$)))(?<user>(?<=:)(.*\n?))");
-                        Match matches2 = regex2.Match(ircData);
+                    if (ircData.Contains("PING"))
+                    {
+                        string pingID = ircData.Split(':')[1];
+                        simpleirc.DebugCallBack("RECEIVED PING WITH ID: " + pingID + "\n");
+                        writeIrc("PONG :" + pingID);
 
-                        if (matches1.Success)
+                    }
+                    if (!ircData.ToLower().Contains("callerid") && !ircData.ToLower().Contains("chantypes") && !ircData.ToLower().Contains("version"))
+                    {
+
+                        
+
+                        string[] messageSplitFromData = ircData.Split(new string[] { newChannel }, StringSplitOptions.None);
+                        string message = messageSplitFromData[messageSplitFromData.Length - 1];
+                        try
                         {
-                            simpleirc.DebugCallBack("RAW SERVER DATA 1: " + ircData + "\n");
-                            userName = matches1.Groups["user"].Value;
-                            messageFromUser = matches1.Groups["message"].Value.Trim().Substring(1);
-                            simpleirc.chatOutput(userName, messageFromUser);
+                            message = message.Split(new string[] { newUsername + " :" }, StringSplitOptions.None)[1];
                         }
-                        else if (matches2.Success)
+                        catch
                         {
-                            simpleirc.DebugCallBack("RAW SERVER DATA 2: " + ircData + "\n");
-                            userName = matches2.Groups["user"].Value;
-                            messageFromUser = matches2.Groups["message"].Value.Trim().Substring(1);
-                            simpleirc.chatOutput(userName, messageFromUser);
-                        }
-                        else
-                        {
-                            simpleirc.DebugCallBack("RAW SERVER DATA 3: " + ircData + "\n");
-                            simpleirc.DebugCallBack("CHANNEL : " + newChannel + "\n");
-                            simpleirc.DebugCallBack("DOING IT THE OLD FASHIONED STRING SPLIT WAY\n");
-
-                            string[] messageSplitFromData = ircData.Split(new string[] { newChannel }, StringSplitOptions.None);
-                            string message = messageSplitFromData[messageSplitFromData.Length - 1];
-
-                            string user = messageSplitFromData[0].Split('!')[0].Substring(1);
-
-                            simpleirc.chatOutput(user, message);
 
                         }
+
+                        string user = messageSplitFromData[0].Split('!')[0].Substring(1);
+
+                        simpleirc.chatOutput(user, message);
 
                     }
                     else if (ircData.Contains("JOIN"))
@@ -222,10 +223,16 @@ namespace SimpleIRCLib
 
                     if(ircData.ToLower().Contains("end of /names list"))
                     {
-                        string[] userarray = Users.ToArray<String>();
-                        simpleirc.UsersListReceived(userarray);
+                        try
+                        {
+
+                            string[] userarray = Users.ToArray<String>();
+                            simpleirc.UsersListReceived(userarray);
+                        } catch
+                        {
+
+                        }
                     }
-                    simpleirc.DebugCallBack(ircData);
                     Thread.Sleep(1);
                 }
                 simpleirc.DebugCallBack("\n STOPPED RECEIVER: ");
@@ -336,12 +343,21 @@ namespace SimpleIRCLib
                 simpleirc.DebugCallBack("STARTED QUITTING");
                 quitConnect();
             }
+            else if (Input.ToLower().Contains("/msg"))
+            {
+                writeIrc(Input.Replace("/msg", "PRIVMSG"));
+            }
             else
             {
                 writeIrc("PRIVMSG " + newChannel + " :" + Input);
             }
 
             simpleirc.chatOutput(newUsername,  Input);
+        }
+
+        public void sendRawMsg(string msg)
+        {
+            writeIrc(msg);
         }
 
         //asks the server for all (visible) users in channel x (send empty string if you want over all channels on server)
@@ -364,7 +380,7 @@ namespace SimpleIRCLib
         public void writeIrc(string input)
         {
             if (writer.BaseStream != null) {
-                writer.WriteLine(input);
+                writer.Write(input + Environment.NewLine);
                 writer.Flush();
             } else
             {

@@ -14,9 +14,6 @@ It's main features are:
 ### NuGet
 [NuGet Package](https://www.nuget.org/packages/SimpleIRCLib)
 
-### Direct Download DLL
-[DLL](https://github.com/EldinZenderink/SimpleIRCLib/raw/master/Library/SimpleIRCLib.dll)
-
 ### Version
 1.0.0:
 - First release version
@@ -56,6 +53,13 @@ It's main features are:
 1.2.0
 - Functionality update: Added method to retreive all the users in the current channel, as well as in other channels (but most of them will be hidden, so not very usefull ^^).
 
+1.2.1
+- Functionality update: Send Raw Messages (such as NICK, PRIVMSG etc.)
+- Functionality update: Retreive Raw Data
+- Functionality update: Send /msg using normal sendMessage() function
+- Functionality update: Receive Notice message just like PRIVMSG (end user sees the source of the notice, for example: NickServ: bla bla bla)
+- Code update: changed parsing messages a bit.
+
  
 ### Usage - Console Application
 
@@ -65,6 +69,7 @@ This is a list with the most important methods available to you:
 
     (void)        setupIrc(ip, port, username, password, channel, chatOutputCallback);
     (void)        setDebugCallback(debugOutputCallback);
+    (void)        setRawOutput(setRawOutputCallback);
     (string)      downloadDir;            //is now string, can be changed while running instance 
     (void)        setDownloadStatus(downloadStatusCallback);
     (void)        startClient();
@@ -74,7 +79,8 @@ This is a list with the most important methods available to you:
     (object)      getDownloadProgress(string whichdownloaddetail) //see below
     (void)        getUsersInCurrentChannel();
     (void)        getUsersInDifferentChannel(string channel)
-    (void)        sendMessage(message); 
+    (void)        sendMessage(message);
+    (void)        sendRawMessage(message); 
     (string)      newUsername;            //is now string field instead of method
     (string)      newChannel;             //is now string field instead of method
 
@@ -88,6 +94,7 @@ After doing that, add the following code to start your irc client:
     SimpleIRC irc = new SimpleIRC();
     irc.setupIrc(ip, port, username, password, channel, chatOutputCallback);
     irc.setDebugCallback(debugOutputCallback);
+    irc.setRawOutput(rawOutputCallback);
     irc.setDownloadStatusChangeCallback(downloadStatusCallback);
     irc.setUserListReceivedCallback(userListReceivedCallback);
     irc.startClient();
@@ -110,7 +117,14 @@ Your callbacks should/could look like this:
         Console.WriteLine(debug);
         Console.WriteLine("===============END DEBUG MESSAGE===============");
     }
-    
+
+**rawOutputCallback:**
+
+    void rawOutputCallback(string output)
+    {
+        Console.WriteLine(output);
+    }
+
 **downloadStatusCallback:**
 
     void downloadStatusCallback() //see below for definition of each index in this array
@@ -180,7 +194,6 @@ I will try to fix (significant) bugs as quick as possible, but due to my study t
 
 ### Todos
 
-- MONO :D
 - Some DCC fixes, most things seem to work, but there are some odd cases where it might not work.
 - More readable code (getting better)
 - Renaming some stupidly named names 

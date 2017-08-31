@@ -41,7 +41,7 @@ namespace IrcLibTest
             Console.WriteLine("Username(default is : RareIRC_Client) = ");
             if ((username = Console.ReadLine()) == "")
             {
-                username = "RareIRC_Client";
+                username = "RoflHerp";
             }
 
             Console.WriteLine("Password(not working yet, default is : ) = ");
@@ -58,6 +58,7 @@ namespace IrcLibTest
 
             irc = new SimpleIRC();
             irc.setupIrc(ip, port, username, password, channel, chatOutputCallback);
+            irc.setRawOutput(rawOutputCallback);
             irc.setDebugCallback(debugOutputCallback);
             irc.startClient();
             irc.setDownloadStatusChangeCallback(downloadStatusChanged);
@@ -66,15 +67,9 @@ namespace IrcLibTest
             {
 
                 string Input = Console.ReadLine();
-                if (Input != null || Input != "" || Input != String.Empty)
+                if (Input != null || Input != "" || Input != String.Empty && irc.isClientRunning())
                 {
                     irc.sendMessage(Input);
-                }
-                if (!irc.isClientRunning())
-                {
-
-                    Console.WriteLine("CLIENT NOT RUNNING :S");
-                    break;
                 }
 
             }
@@ -89,6 +84,11 @@ namespace IrcLibTest
         public static void chatOutputCallback(string user, string message)
         {
             Console.WriteLine(user + ": " + message);
+        }
+
+        public static void rawOutputCallback(string rawData)
+        {
+            //Console.WriteLine("RAW: " + rawData);
         }
 
         public static void debugOutputCallback(string debug)
