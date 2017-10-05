@@ -60,6 +60,8 @@ It's main features are:
 - Functionality update: Receive Notice message just like PRIVMSG (end user sees the source of the notice, for example: NickServ: bla bla bla)
 - Code update: changed parsing messages a bit.
 
+1.2.2
+- Fixed issue with downloading filesizes larger than 4Gb.
  
 ### Usage - Console Application
 
