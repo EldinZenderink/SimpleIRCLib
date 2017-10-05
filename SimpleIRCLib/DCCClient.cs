@@ -14,11 +14,11 @@ namespace SimpleIRCLib
         public string newDccString { get; set; }
         public string newFileName { get; set; }
         public int newPortNum { get; set; }
-        public int newFileSize { get; set; }
+        public Int64 newFileSize { get; set; }
         public string newIp { get; set; }
         public int Progress { get; set; }
         public string Status { get; set; }
-        public long Bytes_Seconds { get; set; }
+        public Int64  Bytes_Seconds { get; set; }
         public int KBytes_Seconds { get; set; }
         public int MBytes_Seconds { get; set; }
         public string botName { get; set; }
@@ -113,7 +113,7 @@ namespace SimpleIRCLib
                 simpleirc.DebugCallBack(" newFileName(without illigal chars): " + newFileName + "\n");
 
 
-                newFileSize = Convert.ToInt32(matches.Groups["size"].Value.Trim());
+                newFileSize = Convert.ToInt64(matches.Groups["size"].Value.Trim());
                 //convert bitwise ip to normal ip
                 try
                 {
@@ -121,7 +121,7 @@ namespace SimpleIRCLib
                     simpleirc.DebugCallBack("New Filename: " + newFileName + "\n");
 
                     simpleirc.DebugCallBack(" newIpBW: " + matches.Groups["bitwiseip"].Value.Trim() + "\n");
-                    long newIpBW = Convert.ToInt64(matches.Groups["bitwiseip"].Value.Trim());
+                    Int64  newIpBW = Convert.ToInt64(matches.Groups["bitwiseip"].Value.Trim());
                     IPEndPoint hostIPEndPoint = new IPEndPoint(newIpBW, newPortNum);
                     string[] ipadressinfoparts = hostIPEndPoint.ToString().Split(':');
                     string[] ipnumbers = ipadressinfoparts[0].Split('.');
@@ -173,9 +173,9 @@ namespace SimpleIRCLib
                             updateStatus("DOWNLOADING");
 
                             //values to keep track of progress
-                            long bytesReceived = 0;
-                            long oldBytesReceived = 0;
-                            long oneprocent = newFileSize / 100;
+                            Int64  bytesReceived = 0;
+                            Int64  oldBytesReceived = 0;
+                            Int64  oneprocent = newFileSize / 100;
                             DateTime start = DateTime.Now;
                             bool timedOut = false;
 
