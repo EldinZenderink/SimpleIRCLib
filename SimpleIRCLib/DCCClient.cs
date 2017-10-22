@@ -235,7 +235,7 @@ namespace SimpleIRCLib
 
                                     Progress = (int)(bytesReceived / oneprocent);
                                     //check if data is still available, to avoid stalling of download thread
-                                    int timeOut = 0;
+                                    /* int timeOut = 0;
                                     while (!dlstream.DataAvailable)
                                     {
                                         if (timeOut == 1000)
@@ -247,7 +247,7 @@ namespace SimpleIRCLib
                                             break;
                                         }
                                         timeOut++;
-                                        Thread.Sleep(1);
+                                        Thread.Sleep(4);
                                     }
 
                                     //stop download thread if timeout is reached
@@ -255,7 +255,7 @@ namespace SimpleIRCLib
                                     {
                                         timedOut = true;
                                         break;
-                                    }
+                                    } */
                                 }
 
                                 //close all connections and streams (just to be save)
@@ -283,6 +283,8 @@ namespace SimpleIRCLib
                                     timedOut = false;
                                 } else if(!simpleirc.shouldClientStop)
                                 {
+                                    //make sure that in the event something happens and the downloader calls delete after finishing, the file will remain where it is.
+                                    dlDirAndFileName = "";
                                     updateStatus("COMPLETED");
                                 }
                             }
@@ -326,17 +328,24 @@ namespace SimpleIRCLib
         public void abortDownloader()
         {
             simpleirc.DebugCallBack("Downloader Stopped");
-            isDownloading = false;
-            downloader.Abort();
+            if (isDownloading)
+            {
+
+                isDownloading = false;
+                downloader.Abort();
+
+                try
+                {
+                    simpleirc.DebugCallBack("File " + currentFilePath + " will be deleted due to aborting");
+                    File.Delete(currentFilePath);
+                }
+                catch (Exception e)
+                {
+                    simpleirc.DebugCallBack("File " + currentFilePath + " probably doesn't exist :X");
+                }
+            }
 
             updateStatus("ABORTED");
-            try
-            {
-                File.Delete(currentFilePath);
-            } catch (Exception e)
-            {
-                simpleirc.DebugCallBack("File " + currentFilePath + " probably doesn't exist :X");
-            }
         }
     }
 }
