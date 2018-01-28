@@ -26,7 +26,11 @@ namespace SimpleIRCLib
         public string downloadDir { get; set; }
 
         //public bool which should stop every running tasks and s
-        public bool shouldClientStop = false;
+        public bool shouldClientStop { get; set; }
+
+        //public bool which tells the library user if there is an error, this could mean that a function could return a false postive false (XD)
+        public bool didErrorHappen { get; set; }
+
 
         //public available information
 
@@ -49,7 +53,9 @@ namespace SimpleIRCLib
             newUsername = "";
             newPassword = "";
             newChannel = "";
-            downloadDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
+            downloadDir = "";
+            shouldClientStop = false;
+            didErrorHappen = false;
         }
 
         
@@ -73,7 +79,7 @@ namespace SimpleIRCLib
             DebugCallBack = null;
             downloadStatusChange = null;
             shouldClientStop = false;
-            downloadDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
+            downloadDir = "";
         }
 
         /// <summary>
@@ -155,9 +161,15 @@ namespace SimpleIRCLib
         {
             try
             {
+                didErrorHappen = false;
                 return con.isConnectionEstablised;
-            } catch
+            } catch(Exception e)
             {
+                if (DebugCallBack != null)
+                {
+                    DebugCallBack("Could not check if connection is established: " + e.ToString());
+                }
+                didErrorHappen = true;
                 return false;
             }
         }
@@ -172,6 +184,8 @@ namespace SimpleIRCLib
             //execute quit stuff
             try
             {
+
+                didErrorHappen = false;
                 if (con.isConnectionEstablised)
                 {
                     shouldClientStop = true;
@@ -181,8 +195,13 @@ namespace SimpleIRCLib
                 {
                     return false;
                 }
-            } catch
+            } catch(Exception e)
             {
+                if (DebugCallBack != null)
+                {
+                    DebugCallBack("Could not quit irc due to: " + e.ToString());
+                }
+                didErrorHappen = true;
                 return false;
             }
             
@@ -195,7 +214,19 @@ namespace SimpleIRCLib
         /// <returns></returns>
         public bool stopXDCCDownload()
         {
-           return con.stopXDCCDownload();
+            try
+            {
+                didErrorHappen = false;
+                return con.stopXDCCDownload();
+            } catch(Exception e)
+            {
+                if (DebugCallBack != null)
+                {
+                    DebugCallBack("Could not stop xdcc download due to: " + e.ToString());
+                }
+                didErrorHappen = true;
+                return false;
+            }
         }
 
         //
@@ -263,13 +294,41 @@ namespace SimpleIRCLib
 
         }
 
+        /// <summary>
+        ///returns true or false upon calling this method, for telling you if the downlaod has been stopped or not
+        /// </summary>
+        /// <returns></returns>
+        public bool checkIfDownload()
+        {
+            try
+            {
+                didErrorHappen = false;
+                return con.checkIfDownloading();
+            } catch(Exception e)
+            {
+                if (DebugCallBack != null)
+                {
+                    DebugCallBack("Could not check if downloading: " + e.ToString());
+                }
+                didErrorHappen = true;
+                return false;
+            }
+        }
+
 
         /// <summary>
         ///get users in current channel
         /// </summary>
         public void getUsersInCurrentChannel()
         {
-            con.getUsersInChannel("");
+            try
+            {
+
+                con.getUsersInChannel("");
+            } catch(Exception e)
+            {
+                DebugCallBack("Could not request users from channel: " + e.ToString());
+            }
         }
 
 
@@ -279,7 +338,14 @@ namespace SimpleIRCLib
         /// <param name="channel"></param>
         public void getUsersInDifferentChannel(string channel)
         {
-            con.getUsersInChannel(channel);
+            try
+            {
+
+                con.getUsersInChannel(channel);
+            } catch(Exception e)
+            {
+                DebugCallBack("Could not request users from channel: " + e.ToString());
+            }
         }
 
 
@@ -292,6 +358,7 @@ namespace SimpleIRCLib
         {
             try
             {
+                didErrorHappen = false;
                 if (con.isConnectionEstablised)
                 {
                     con.sendMsg(message);
@@ -300,7 +367,12 @@ namespace SimpleIRCLib
                 {
                     return false;
                 }
-            } catch {
+            } catch(Exception e) {
+                if (DebugCallBack != null)
+                {
+                    DebugCallBack("Could not send message: " + e.ToString());
+                }
+                didErrorHappen = true;
                 return false;
             }
                       
@@ -310,6 +382,7 @@ namespace SimpleIRCLib
         {
             try
             {
+                didErrorHappen = false;
                 if (con.isConnectionEstablised)
                 {
                     con.sendRawMsg(message);
@@ -320,8 +393,13 @@ namespace SimpleIRCLib
                     return false;
                 }
             }
-            catch
+            catch(Exception e)
             {
+                if (DebugCallBack != null)
+                {
+                    DebugCallBack("Could not send raw message: " + e.ToString());
+                }
+                didErrorHappen = true;
                 return false;
             }
 

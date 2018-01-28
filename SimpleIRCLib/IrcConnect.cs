@@ -119,19 +119,18 @@ namespace SimpleIRCLib
 
         }
 
-        public async void StartReceivingChat()
+        public void StartReceivingChat()
         {
-            await Task.Run(() => ReceiveChat());
+            Task.Run(() => ReceiveChat());
         }
 
-        private async Task ReceiveChat()
+        private void ReceiveChat()
         {
             string ircData;
             try {
                 while ((ircData = reader.ReadLine()) != null && !simpleirc.shouldClientStop && !stopTask)
                 {
                     string userName;
-                    string messageFromUser;
                     isConnectionEstablised = true;
                     try
                     {
@@ -212,12 +211,19 @@ namespace SimpleIRCLib
                     //RareIRC_Client = #weebirc :RareIRC_Client
                     if (ircData.Contains(newUsername + " = #"))
                     {
-                        string userListFullString = ircData.Split(new[] { " = " }, StringSplitOptions.None)[1].Substring(newChannel.Length + 2);
-                        string[] users = userListFullString.Split(' ');
-                        foreach(string user in users)
+                        try
                         {
-                            Users.Add(user);
-                        }                 
+                            string userListFullString = ircData.Split(new[] { " = " }, StringSplitOptions.None)[1].Substring(newChannel.Length + 2);
+                            string[] users = userListFullString.Split(' ');
+                            foreach (string user in users)
+                            {
+                                Users.Add(user);
+                            }
+                        } catch (Exception e)
+                        {
+                            simpleirc.DebugCallBack("SOMETHING HAPPEND WITH USERNAME PARSING: " + e.ToString());
+                        }
+                                     
                         
                     }
 
@@ -379,13 +385,23 @@ namespace SimpleIRCLib
         //function to write to the irc server, bit easier to use and better looking
         public void writeIrc(string input)
         {
-            if (writer.BaseStream != null) {
-                writer.Write(input + Environment.NewLine);
-                writer.Flush();
-            } else
+            try
+            {
+                if (writer.BaseStream != null)
+                {
+                    writer.Write(input + Environment.NewLine);
+                    writer.Flush();
+                }
+                else
+                {
+                    simpleirc.DebugCallBack("Could not send message" + input + ", irc client is not running :X, error: \n");
+                }
+            } catch(Exception e)
             {
                 simpleirc.DebugCallBack("Could not send message" + input + ", irc client is not running :X, error: \n");
+                simpleirc.DebugCallBack(e.ToString());
             }
+           
         }
 
         //function for stopping the dcc downloader
@@ -398,8 +414,25 @@ namespace SimpleIRCLib
             } catch (Exception e)
             {
                 simpleirc.DebugCallBack("You probably are not downloading...");
+                simpleirc.DebugCallBack(e.ToString());
+                return false;
+            }
+        }
+        //function for stopping the dcc downloader
+        public bool checkIfDownloading()
+        {
+            try
+            {
+                return dcc.checkIfDownloading();
+            }
+            catch (Exception e)
+            {
+                simpleirc.DebugCallBack("You probably are not downloading...");
+                simpleirc.DebugCallBack(e.ToString());
                 return false;
             }
         }
     }
+
+    
 }

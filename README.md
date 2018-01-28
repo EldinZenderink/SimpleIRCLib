@@ -62,7 +62,20 @@ It's main features are:
 
 1.2.2
 - Fixed issue with downloading filesizes larger than 4Gb.
+
+1.2.3
+- Abort download only deletes file if it was actually downloading the file.(had issues where it would still delete even if the file was already done downloading)
  
+1.2.4
+- Bug where some DCC SEND messages from bots were not detected & parsed properly. 
+- Should support IPv6 now. (Not really tested).
+- Added function to check if download thread is still running.
+- Added some debug messages for debugging purposes.
+- Default download directory is now set to the same directory where the libary resides.
+- Added flag to check if an error occured of any kind within the library (doesn't tell what kind of error yet).
+
+
+
 ### Usage - Console Application
 
 *TIP: If you do not want a seperate DLL file with your program you can either copy the .cs files to your solution/project and manually change the Namespace, or you can use a program called [ILMerge](https://www.microsoft.com/en-us/download/details.aspx?id=17630) to combine a exe and dll together(not tested)!*
