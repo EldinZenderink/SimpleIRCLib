@@ -1,408 +1,216 @@
 ﻿using System;
 using System.IO;
+using System.Reflection;
+using System.Threading;
 
 namespace SimpleIRCLib
 {
-    // This project can output the Class library as a NuGet Package.
-    // To enable this option, right-click on the project and select the Properties menu item. In the Build tab select "Produce outputs on build".
+    /// <summary>
+    /// A combiner class that combines all the logic from both the IrcClient & DCCClient with simple methods to control these clients.
+    /// </summary>
     public class SimpleIRC
     {
-        //sets the method to be called when there is a debug message
-        public Action<string> DebugCallBack;
 
-        //sets the method to be called when there is a change in the status of the current download
-        public Action downloadStatusChange;
-
-        //sets the method to be called when there is a chat message to be shown
-        public Action<string[]> UsersListReceived;
-
-        //sets the method to be called when there is a chat message to be shown
-        public Action<string, string> chatOutput;
-
-        //sets the method to be called when there is a message from the irc server, completely raw, so you can do your own stuff.
-        public Action<string> rawOutput;
-
-        //sets the download folder for the current download and following downloads (can be changed when instance is running)
-        public string downloadDir { get; set; }
-
-        //public bool which should stop every running tasks and s
-        public bool shouldClientStop { get; set; }
-
-        //public bool which tells the library user if there is an error, this could mean that a function could return a false postive false (XD)
-        public bool didErrorHappen { get; set; }
-
-
-        //public available information
-
-        public string newIP { get; set; }
-        public int newPort { get; set; }
-        public string newUsername { get; set; }
-        public string newChannel { get; set; }
-        public string newPassword { get; set; }
-
-        //private variables
-        private IrcConnect con;
 
         /// <summary>
-        /// Constructor.
+        /// Ip address of irc server
+        /// </summary>
+        private string _newIP { get; set; }
+        /// <summary>
+        /// Port of irc server to connect to
+        /// </summary>
+        private int _newPort { get; set; }
+        /// <summary>
+        /// Username to register on irc server
+        /// </summary>
+        private string _newUsername { get; set; }
+        /// <summary>
+        /// List with channels seperated with ',' to join when connecting to IRC server
+        /// </summary
+        private string _newChannels { get; set; }
+        /// <summary>
+        /// Password to connect to a secured irc server
+        /// </summary>
+        private string _newPassword { get; set; }
+        /// <summary>
+        /// download directory used for DCCClient.cs
+        /// </summary>
+        private string _downloadDir { get; set; }
+
+        /// <summary>
+        /// Irc Client for sending and receiving messages to a irc server 
+        /// </summary>
+        public IrcClient IrcClient { get; set; }
+        /// <summary>
+        /// DCCClient used by the IRCClient for starting a download on a separate thread using the DCC Protocol
+        /// </summary>
+        public DCCClient DccClient { get; set; }
+
+
+        /// <summary>
+        /// Constructor, sets up bot ircclient and dccclient, so that users can register event handlers.
         /// </summary>
         public SimpleIRC()
         {
-            newIP = "";
-            newPort = 0;
-            newUsername = "";
-            newPassword = "";
-            newChannel = "";
-            downloadDir = "";
-            shouldClientStop = false;
-            didErrorHappen = false;
+            _newIP = "";
+            _newPort = 0;
+            _newUsername = "";
+            _newPassword = "";
+            _newChannels = "";
+            _downloadDir = "";
+            IrcClient = new IrcClient();
+            DccClient = new DCCClient();
         }
 
-        
+
         /// <summary>
         /// Setup the client to be able to connect to the server
-        /// </summary>
-        /// <param name="IP">Server address, possibly works with dns addresses (irc.xxx.x), but ip addresses works just fine (of type string)</param>
-        /// <param name="Port">Port of the server you want to connect to, of type int</param>
-        /// <param name="Username">Username the client wants to use, of type string</param>
-        /// <param name="Password">Password, currently not used!, of type string</param>
-        /// <param name="Channel">Channel(s) the client wants to connect to, possible to connect to multiple channels at once by seperating each channel with a ',' (Example: #chan1,#chan2), of type string</param>
-        /// <param name="chatoutput">callback method when messages are received from the server, method to be used as callback needs two string parameters, one for username, second for the actual message.</param>
-        public void setupIrc(string IP, int Port, string Username, string Password, string Channel, Action<string, string> chatoutput)
+        /// </summary>     
+        /// <param name="ip">Server address, possibly works with dns addresses (irc.xxx.x), but ip addresses works just fine (of type string)</param>
+        /// <param name="username">Username the client wants to use, of type string</param>
+        /// <param name="channels">Channel(s) the client wants to connect to, possible to connect to multiple channels at once by seperating each channel with a ',' (Example: #chan1,#chan2), of type string</param>
+        /// <param name="port">Port, optional parameter, where default = 0 (Automatic port selection), is port of the server you want to connect to, of type int</param>
+        /// <param name="password">Password, optional parameter, where default value is "", can be used to connect to a password protected server.</param>
+        /// <param name="timeout">Timeout, optional parameter, where default value is 3000 milliseconds, the maximum time before a server needs to answer, otherwise errors are thrown.</param>
+        /// <param name="enableSSL">Timeout, optional parameter, where default value is 3000 milliseconds, the maximum time before a server needs to answer, otherwise errors are thrown.</param>
+        public void SetupIrc(string ip, string username, string channels, int port = 0, string password = "", int timeout = 3000, bool enableSSL = true)
         {
-            newIP = IP;
-            newPort = Port;
-            newUsername = Username;
-            newPassword = Password;
-            newChannel = Channel;
-            chatOutput = chatoutput;
-            DebugCallBack = null;
-            downloadStatusChange = null;
-            shouldClientStop = false;
-            downloadDir = "";
+            _newIP = ip;
+            _newPort = port;
+            _newUsername = username;
+            _newPassword = password;
+            _newChannels = channels;
+            _downloadDir = "";
+            
+            IrcClient.SetConnectionInformation(ip, username, channels, DccClient,  _downloadDir, port, password, timeout, enableSSL);
+
         }
 
         /// <summary>
         /// Sets the download directory for dcc downloads.
         /// </summary>
         /// <param name="downloaddir"> Requires a path to a directory of type string as parameter.</param>
-        public void setCustomDownloadDir(string downloaddir)
+        public void SetCustomDownloadDir(string downloaddir)
         {
-            downloadDir = downloaddir;
-        }
-
-        /// <summary>
-        ///Set debug callback method. Will be executed when there is a new debug message available
-        /// </summary>
-        /// <param name="callback">A method which should have a string parameter of its own.</param>
-        public void setDebugCallback(Action<string> callback)
-        {
-            DebugCallBack = callback;
-        }
-
-        /// <summary>
-        /// Executes a method when there is new information about the current download
-        /// </summary>
-        /// <param name="callback">takes a method as parameter, which will be executed</param>
-        public void setDownloadStatusChangeCallback(Action callback)
-        {
-            downloadStatusChange = callback;
-        }
-
-        /// <summary>
-        ///set user list received callback,
-        /// </summary>
-        /// <param name="callback"> you should provide a method where the method you pass through needs to have a string[] as parameter</param>
-        public void setUserListReceivedCallback(Action<string[]> callback)
-        {
-            UsersListReceived = callback;
-        }
-
-        /// <summary>
-        /// Sets the download directory for dcc downloads.
-        /// </summary>
-        /// <param name="downloaddir"> Requires a path to a directory of type string as parameter.</param>
-        public void setRawOutput(Action<string> rawoutput)
-        {
-            rawOutput = rawoutput;
+            _downloadDir = downloaddir;
         }
 
         /// <summary>
         /// Starts the irc client with the given parameters in the constructor
         /// </summary>
-        public void startClient()
+        /// <returns>true or false depending if it starts succesfully</returns>
+        public bool StartClient()
         {
+            if (IrcClient != null)
+            {
+                if (!IrcClient.IsConnectionEstablished())
+                {
+                    IrcClient.Connect();
 
-            con = new IrcConnect(newIP, newPort, newUsername, newPassword, newChannel, this);
-            if (con != null)
-            {
-                if (!con.isConnectionEstablised)
-                {
-                    con.Connect();
-                }
-                else
-                {
-                    DebugCallBack("You are already connected to a server, disconnect first! \n");
-                }
-            } else
-            {
-                if (DebugCallBack != null)
-                {          
-                    DebugCallBack("You are already connected to a server, disconnect first! \n");
+                    int timeout = 0;
+                    while (!IrcClient.IsClientRunning())
+                    {
+                        Thread.Sleep(1);
+                        if (timeout >= 3000)
+                        {
+                            return false;
+                        }
+                        timeout++;
+                    }
+                    return true;
                 }
             }
+
+            return false;
         }
 
         /// <summary>
         /// Checks if the client is running.
         /// </summary>
         /// <returns>true or false</returns>
-        public bool isClientRunning()
+        public bool IsClientRunning()
         {
-            try
-            {
-                didErrorHappen = false;
-                return con.isConnectionEstablised;
-            } catch(Exception e)
-            {
-                if (DebugCallBack != null)
-                {
-                    DebugCallBack("Could not check if connection is established: " + e.ToString());
-                }
-                didErrorHappen = true;
-                return false;
-            }
+            return IrcClient.IsClientRunning();
         }
-
 
         /// <summary>
         /// Stops the client
         /// </summary>
         /// <returns>true or false depending on succes</returns>
-        public bool stopClient()
+        public bool StopClient()
         {
             //execute quit stuff
-            try
-            {
+            bool check = false;
 
-                didErrorHappen = false;
-                if (con.isConnectionEstablised)
-                {
-                    shouldClientStop = true;
-                    con.quitConnect();
-                    return true;
-                } else
-                {
-                    return false;
-                }
-            } catch(Exception e)
-            {
-                if (DebugCallBack != null)
-                {
-                    DebugCallBack("Could not quit irc due to: " + e.ToString());
-                }
-                didErrorHappen = true;
-                return false;
-            }
-            
-        }
-
-
-        /// <summary>
-        ///returns true or false upon calling this method, for telling you if the downlaod has been stopped or not
-        /// </summary>
-        /// <returns></returns>
-        public bool stopXDCCDownload()
-        {
-            try
-            {
-                didErrorHappen = false;
-                return con.stopXDCCDownload();
-            } catch(Exception e)
-            {
-                if (DebugCallBack != null)
-                {
-                    DebugCallBack("Could not stop xdcc download due to: " + e.ToString());
-                }
-                didErrorHappen = true;
-                return false;
-            }
-        }
-
-        //
-        /// <summary>
-        /// gets the download details by defining which detail you want
-        /// available (use this as the string for the parameter):
-        /// </summary>
-        /// <param name="whichdownloaddetail">Possible inputs, in order: mbps,kbps,bps,filename,bot,pack,dccstring,ip,port,progress,status,size</param>
-        /// <returns>Object of current download, in order: Megabytes Per Second, Kilobytes Per Second, Bytes Per Second, filename, bot (source), pack (unique id for bot), dccstring (raw server return when asked for download), ip (of server where file is located), port (of server where file is located),progress, status of the current download(failed, running etc), size of file</returns>
-        public object getDownloadProgress(string whichdownloaddetail)
-        {
-            object[] dlDetails = con.passDownloadDetails();
-            if(whichdownloaddetail == "mbps")
-            {
-                return dlDetails[9];
-            }
-            else if (whichdownloaddetail == "kbps")
-            {
-                return dlDetails[8];
-            }
-            else if(whichdownloaddetail == "bps")
-            {
-                return dlDetails[7];
-            }
-            else if (whichdownloaddetail == "filename")
-            {
-                return dlDetails[1];
-            }
-            else if (whichdownloaddetail == "bot")
-            {
-                return dlDetails[6];
-            }
-            else if (whichdownloaddetail == "pack")
-            {
-                return dlDetails[5];
-            }
-            else if (whichdownloaddetail == "dccstring")
-            {
-                return dlDetails[0];
-            }
-            else if (whichdownloaddetail == "ip")
-            {
-                return dlDetails[3];
-            }
-            else if (whichdownloaddetail == "port")
-            {
-                return dlDetails[4];
-            }
-            else if (whichdownloaddetail == "progress")
-            {
-                return dlDetails[10];
-            }
-            else if (whichdownloaddetail == "status")
-            {
-                return dlDetails[11];
-            }
-            else if (whichdownloaddetail == "size")
-            {
-                return dlDetails[2];
-            }
-            else
-            {
-                return null;
-            }
-
+            check = IrcClient.StopClient();
+            check = IrcClient.StopXDCCDownload();
+            return check;
         }
 
         /// <summary>
         ///returns true or false upon calling this method, for telling you if the downlaod has been stopped or not
         /// </summary>
         /// <returns></returns>
-        public bool checkIfDownload()
+        public bool StopXDCCDownload()
         {
-            try
-            {
-                didErrorHappen = false;
-                return con.checkIfDownloading();
-            } catch(Exception e)
-            {
-                if (DebugCallBack != null)
-                {
-                    DebugCallBack("Could not check if downloading: " + e.ToString());
-                }
-                didErrorHappen = true;
-                return false;
-            }
+            return IrcClient.StopXDCCDownload();
         }
-
+        
+        /// <summary>
+        ///returns true or false upon calling this method, for telling you if the downlaod has been stopped or not
+        /// </summary>
+        /// <returns></returns>
+        public bool CheckIfDownload()
+        {
+            return IrcClient.CheckIfDownloading();
+        }
 
         /// <summary>
         ///get users in current channel
         /// </summary>
-        public void getUsersInCurrentChannel()
+        public void GetUsersInCurrentChannel()
         {
-            try
-            {
-
-                con.getUsersInChannel("");
-            } catch(Exception e)
-            {
-                DebugCallBack("Could not request users from channel: " + e.ToString());
-            }
+            IrcClient.GetUsersInChannel();
         }
-
 
         /// <summary>
         ///get users in different channel, parameter is the channel name of type string (example: "#yourchannel")
         /// </summary>
         /// <param name="channel"></param>
-        public void getUsersInDifferentChannel(string channel)
+        public void GetUsersInDifferentChannel(string channel)
         {
-            try
-            {
-
-                con.getUsersInChannel(channel);
-            } catch(Exception e)
-            {
-                DebugCallBack("Could not request users from channel: " + e.ToString());
-            }
+            IrcClient.GetUsersInChannel(channel);
         }
-
 
         /// <summary>
-        ///send message
+        ///send message to all channels
         /// </summary>
-        /// <param name="message"></param>
-        /// <returns></returns>
-        public bool sendMessage(string message)
+        /// <param name="message">message to send</param>
+        /// <returns>true if succesfully send</returns>
+        public bool SendMessageToAll(string message)
         {
-            try
-            {
-                didErrorHappen = false;
-                if (con.isConnectionEstablised)
-                {
-                    con.sendMsg(message);
-                    return true;
-                } else
-                {
-                    return false;
-                }
-            } catch(Exception e) {
-                if (DebugCallBack != null)
-                {
-                    DebugCallBack("Could not send message: " + e.ToString());
-                }
-                didErrorHappen = true;
-                return false;
-            }
-                      
+            return IrcClient.SendMessageToAll(message);
         }
 
-        public bool sendRawMessage(string message)
+        /// <summary>
+        /// Sends a message to a specific channel.
+        /// </summary>
+        /// <param name="message">message to send</param>
+        /// <param name="channel">channel for destination</param>
+        /// <returns>true/false depending if sending was succesfull</returns>
+        public bool SendMessageToChannel(string message, string channel)
         {
-            try
-            {
-                didErrorHappen = false;
-                if (con.isConnectionEstablised)
-                {
-                    con.sendRawMsg(message);
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            catch(Exception e)
-            {
-                if (DebugCallBack != null)
-                {
-                    DebugCallBack("Could not send raw message: " + e.ToString());
-                }
-                didErrorHappen = true;
-                return false;
-            }
+            return IrcClient.SendMessageToChannel(message, channel);
+        }
 
+        /// <summary>
+        /// Sends a raw message to irc server
+        /// </summary>
+        /// <param name="message">message to send</param>
+        /// <returns>true/false depending if sending was succesfull</returns>
+        public bool SendRawMessage(string message)
+        {
+            return IrcClient.SendRawMsg(message);
         }
 
     }

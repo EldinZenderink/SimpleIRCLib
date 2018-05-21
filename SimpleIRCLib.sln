@@ -1,11 +1,14 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.27428.2005
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleIRCLib", "SimpleIRCLib\SimpleIRCLib.csproj", "{3D881A50-DB1A-464E-A51E-4CE5EB8BD5F1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IrcLibTest", "IrcLibTest\IrcLibTest.csproj", "{27C58F1A-4851-4A5B-85F7-C387971543DA}"
+	ProjectSection(ProjectDependencies) = postProject
+		{3D881A50-DB1A-464E-A51E-4CE5EB8BD5F1} = {3D881A50-DB1A-464E-A51E-4CE5EB8BD5F1}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FormExample", "FormExample\FormExample.csproj", "{A46528E0-6BB9-4200-8276-3F840E0A7C72}"
 EndProject
@@ -30,5 +33,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {584E8A95-B483-45A0-A38B-985C12EF6371}
 	EndGlobalSection
 EndGlobal

@@ -28,6 +28,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\SimpleIRCLib.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>false</SignAssembly>
@@ -35,16 +36,14 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DCCClient.cs" />
-    <Compile Include="IrcConnect.cs" />
+    <Compile Include="DCCEventArgs.cs" />
+    <Compile Include="IrcClient.cs" />
+    <Compile Include="IrcEventArgs.cs" />
+    <Compile Include="IrcCommands.cs" />
+    <Compile Include="RFC1459Codes.cs" />
     <Compile Include="SimpleIRC.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -1,6 +1,6 @@
 ﻿namespace FormExample
 {
-    partial class Form1
+    partial class IrcClientForm
     {
         /// <summary>
         /// Required designer variable.
@@ -39,9 +39,8 @@
             this.ConnectButton = new System.Windows.Forms.Button();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.DisconnectButton = new System.Windows.Forms.Button();
-            this.ChatOutput = new System.Windows.Forms.RichTextBox();
             this.MessageInput = new System.Windows.Forms.TextBox();
-            this.SendMessageButton = new System.Windows.Forms.Button();
+            this.SendToAll = new System.Windows.Forms.Button();
             this.DownloadsList = new System.Windows.Forms.ListBox();
             this.ShowDebugButton = new System.Windows.Forms.Button();
             this.SetDownloadFolderButton = new System.Windows.Forms.Button();
@@ -50,8 +49,10 @@
             this.label5 = new System.Windows.Forms.Label();
             this.DownloadProgressBar = new System.Windows.Forms.ProgressBar();
             this.OpenFolderDialog = new System.Windows.Forms.FolderBrowserDialog();
-            this.UserList = new System.Windows.Forms.ListBox();
             this.UpdateUserList = new System.Windows.Forms.Button();
+            this.ircChatTabs = new System.Windows.Forms.TabControl();
+            this.SendToChannel = new System.Windows.Forms.Button();
+            this.userListTabs = new System.Windows.Forms.TabControl();
             this.SuspendLayout();
             // 
             // ServerInput
@@ -138,40 +139,32 @@
             this.DisconnectButton.UseVisualStyleBackColor = true;
             this.DisconnectButton.Click += new System.EventHandler(this.DisconnectButton_Click);
             // 
-            // ChatOutput
-            // 
-            this.ChatOutput.Location = new System.Drawing.Point(244, 37);
-            this.ChatOutput.Name = "ChatOutput";
-            this.ChatOutput.Size = new System.Drawing.Size(307, 252);
-            this.ChatOutput.TabIndex = 10;
-            this.ChatOutput.Text = "";
-            // 
             // MessageInput
             // 
-            this.MessageInput.Location = new System.Drawing.Point(49, 314);
+            this.MessageInput.Location = new System.Drawing.Point(233, 311);
             this.MessageInput.Name = "MessageInput";
-            this.MessageInput.Size = new System.Drawing.Size(432, 20);
+            this.MessageInput.Size = new System.Drawing.Size(500, 20);
             this.MessageInput.TabIndex = 11;
             this.MessageInput.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MessageInput_KeyDown);
             // 
-            // SendMessageButton
+            // SendToAll
             // 
-            this.SendMessageButton.Location = new System.Drawing.Point(487, 312);
-            this.SendMessageButton.Name = "SendMessageButton";
-            this.SendMessageButton.Size = new System.Drawing.Size(64, 23);
-            this.SendMessageButton.TabIndex = 12;
-            this.SendMessageButton.Text = "Send";
-            this.SendMessageButton.UseVisualStyleBackColor = true;
-            this.SendMessageButton.Click += new System.EventHandler(this.SendMessageButton_Click);
+            this.SendToAll.Location = new System.Drawing.Point(752, 309);
+            this.SendToAll.Name = "SendToAll";
+            this.SendToAll.Size = new System.Drawing.Size(83, 23);
+            this.SendToAll.TabIndex = 12;
+            this.SendToAll.Text = "Send To All";
+            this.SendToAll.UseVisualStyleBackColor = true;
+            this.SendToAll.Click += new System.EventHandler(this.SendToAll_Click);
             // 
             // DownloadsList
             // 
             this.DownloadsList.FormattingEnabled = true;
             this.DownloadsList.HorizontalScrollbar = true;
-            this.DownloadsList.Location = new System.Drawing.Point(49, 362);
+            this.DownloadsList.Location = new System.Drawing.Point(106, 359);
             this.DownloadsList.Name = "DownloadsList";
             this.DownloadsList.ScrollAlwaysVisible = true;
-            this.DownloadsList.Size = new System.Drawing.Size(502, 121);
+            this.DownloadsList.Size = new System.Drawing.Size(854, 121);
             this.DownloadsList.TabIndex = 13;
             this.DownloadsList.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.DownloadsList_MouseDoubleClick);
             // 
@@ -224,23 +217,14 @@
             // 
             // DownloadProgressBar
             // 
-            this.DownloadProgressBar.Location = new System.Drawing.Point(49, 503);
+            this.DownloadProgressBar.Location = new System.Drawing.Point(106, 495);
             this.DownloadProgressBar.Name = "DownloadProgressBar";
-            this.DownloadProgressBar.Size = new System.Drawing.Size(502, 23);
+            this.DownloadProgressBar.Size = new System.Drawing.Size(854, 23);
             this.DownloadProgressBar.TabIndex = 19;
-            // 
-            // UserList
-            // 
-            this.UserList.FormattingEnabled = true;
-            this.UserList.Location = new System.Drawing.Point(581, 37);
-            this.UserList.Name = "UserList";
-            this.UserList.ScrollAlwaysVisible = true;
-            this.UserList.Size = new System.Drawing.Size(229, 446);
-            this.UserList.TabIndex = 20;
             // 
             // UpdateUserList
             // 
-            this.UpdateUserList.Location = new System.Drawing.Point(581, 503);
+            this.UpdateUserList.Location = new System.Drawing.Point(966, 495);
             this.UpdateUserList.Name = "UpdateUserList";
             this.UpdateUserList.Size = new System.Drawing.Size(229, 23);
             this.UpdateUserList.TabIndex = 21;
@@ -248,13 +232,41 @@
             this.UpdateUserList.UseVisualStyleBackColor = true;
             this.UpdateUserList.Click += new System.EventHandler(this.UpdateUserList_Click);
             // 
-            // Form1
+            // ircChatTabs
+            // 
+            this.ircChatTabs.Location = new System.Drawing.Point(233, 37);
+            this.ircChatTabs.Name = "ircChatTabs";
+            this.ircChatTabs.SelectedIndex = 0;
+            this.ircChatTabs.Size = new System.Drawing.Size(727, 252);
+            this.ircChatTabs.TabIndex = 22;
+            // 
+            // SendToChannel
+            // 
+            this.SendToChannel.Location = new System.Drawing.Point(841, 309);
+            this.SendToChannel.Name = "SendToChannel";
+            this.SendToChannel.Size = new System.Drawing.Size(112, 23);
+            this.SendToChannel.TabIndex = 23;
+            this.SendToChannel.Text = "Send To Channel";
+            this.SendToChannel.UseVisualStyleBackColor = true;
+            this.SendToChannel.Click += new System.EventHandler(this.SendToChannel_Click);
+            // 
+            // userListTabs
+            // 
+            this.userListTabs.Location = new System.Drawing.Point(966, 37);
+            this.userListTabs.Name = "userListTabs";
+            this.userListTabs.SelectedIndex = 0;
+            this.userListTabs.Size = new System.Drawing.Size(229, 452);
+            this.userListTabs.TabIndex = 24;
+            // 
+            // IrcClientForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(822, 530);
+            this.ClientSize = new System.Drawing.Size(1207, 530);
+            this.Controls.Add(this.userListTabs);
+            this.Controls.Add(this.SendToChannel);
+            this.Controls.Add(this.ircChatTabs);
             this.Controls.Add(this.UpdateUserList);
-            this.Controls.Add(this.UserList);
             this.Controls.Add(this.DownloadProgressBar);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
@@ -262,9 +274,8 @@
             this.Controls.Add(this.SetDownloadFolderButton);
             this.Controls.Add(this.ShowDebugButton);
             this.Controls.Add(this.DownloadsList);
-            this.Controls.Add(this.SendMessageButton);
+            this.Controls.Add(this.SendToAll);
             this.Controls.Add(this.MessageInput);
-            this.Controls.Add(this.ChatOutput);
             this.Controls.Add(this.DisconnectButton);
             this.Controls.Add(this.ConnectButton);
             this.Controls.Add(this.labelsomething);
@@ -275,8 +286,8 @@
             this.Controls.Add(this.UsernameInput);
             this.Controls.Add(this.PortInput);
             this.Controls.Add(this.ServerInput);
-            this.Name = "Form1";
-            this.Text = "Form1";
+            this.Name = "IrcClientForm";
+            this.Text = "SimpleIRCLib Irc Client";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -296,9 +307,8 @@
         private System.Windows.Forms.Button ConnectButton;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private System.Windows.Forms.Button DisconnectButton;
-        private System.Windows.Forms.RichTextBox ChatOutput;
         private System.Windows.Forms.TextBox MessageInput;
-        private System.Windows.Forms.Button SendMessageButton;
+        private System.Windows.Forms.Button SendToAll;
         private System.Windows.Forms.ListBox DownloadsList;
         private System.Windows.Forms.Button ShowDebugButton;
         private System.Windows.Forms.Button SetDownloadFolderButton;
@@ -307,8 +317,10 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.ProgressBar DownloadProgressBar;
         private System.Windows.Forms.FolderBrowserDialog OpenFolderDialog;
-        private System.Windows.Forms.ListBox UserList;
         private System.Windows.Forms.Button UpdateUserList;
+        private System.Windows.Forms.TabControl ircChatTabs;
+        private System.Windows.Forms.Button SendToChannel;
+        private System.Windows.Forms.TabControl userListTabs;
     }
 }
 

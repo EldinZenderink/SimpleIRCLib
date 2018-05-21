@@ -1,5 +1,6 @@
 # SimpleIRCLib for Csharp
 **THIS LIBRARY IS STILL IN DEVELOPMENT**
+**STARTING AT V2.0.0 THIS LIBRARY IS NOT BACK-WARDS COMPATIBLE WITH PREVIOUS VERSIONS!**
 
 This library is designed to make communication through IRC easier to implement in your application. In comparison to other C# IRC libraries, this library also enables you to download using the DCC (XDCC) protocol, used by IRC. 
 
@@ -74,135 +75,31 @@ It's main features are:
 - Default download directory is now set to the same directory where the libary resides.
 - Added flag to check if an error occured of any kind within the library (doesn't tell what kind of error yet).
 
+2.0.0
+- Rewritten IrcConnect class (now called IrcClient) to prevent Race conditions!
+- Added timeout warnings.
+- Added support for TLS/SSL
+- Added better error handeling using the error codes from RFC 1459 IRC Protocol
+- Added full support for receiving and sending to seperate channels
+- Added comments and changed names to fit C# code convention
+- Under the hood DCC fixes for more stability and error handeling when downloads go wrong
+- **Changed Action based callback methods to Event handlers**
 
+### Wiki
+To get a better picture of the available methods and properties, go to this wiki:
+[SimpleIRCLib Wiki](https://github.com/EldinZenderink/SimpleIRCLib/wiki/SimpleIRCLib-Methods-Wiki#simpleirc)
 
-### Usage - Console Application
+For a full WinForms example, go to:
+[WinForm Example](https://github.com/EldinZenderink/SimpleIRCLib/tree/master/FormExample)
 
-*TIP: If you do not want a seperate DLL file with your program you can either copy the .cs files to your solution/project and manually change the Namespace, or you can use a program called [ILMerge](https://www.microsoft.com/en-us/download/details.aspx?id=17630) to combine a exe and dll together(not tested)!*
+For a simplified console example:
+[Console Example](https://github.com/EldinZenderink/SimpleIRCLib/tree/master/IrcLibTest)
 
-This is a list with the most important methods available to you:
-
-    (void)        setupIrc(ip, port, username, password, channel, chatOutputCallback);
-    (void)        setDebugCallback(debugOutputCallback);
-    (void)        setRawOutput(setRawOutputCallback);
-    (string)      downloadDir;            //is now string, can be changed while running instance 
-    (void)        setDownloadStatus(downloadStatusCallback);
-    (void)        startClient();
-    (void)        stopClient();
-    (bool)        isClientRunning();
-    (bool)        stopXDCCDownload(); 
-    (object)      getDownloadProgress(string whichdownloaddetail) //see below
-    (void)        getUsersInCurrentChannel();
-    (void)        getUsersInDifferentChannel(string channel)
-    (void)        sendMessage(message);
-    (void)        sendRawMessage(message); 
-    (string)      newUsername;            //is now string field instead of method
-    (string)      newChannel;             //is now string field instead of method
-
-
-Before you start programming, you need to get the package on the NuGet page for this library, or you need to download the dll file manually and reference it in your c# solution/project. Afterwards, you need to do the following:
-
-`using SimpleIrcLib;`
-
-After doing that, add the following code to start your irc client:
-
-    SimpleIRC irc = new SimpleIRC();
-    irc.setupIrc(ip, port, username, password, channel, chatOutputCallback);
-    irc.setDebugCallback(debugOutputCallback);
-    irc.setRawOutput(rawOutputCallback);
-    irc.setDownloadStatusChangeCallback(downloadStatusCallback);
-    irc.setUserListReceivedCallback(userListReceivedCallback);
-    irc.startClient();
-    
-Your callbacks should/could look like this:
-
-**chatOutputCallback:**
-
-    void chatOutputCallback(string user, string message)
-    {
-        Console.WriteLine(user + ":" + message);
-    }
-
-
-**debugOutputCallback:**
-
-    void debugOutputCallback(string debug)
-    {
-        Console.WriteLine("===============DEBUG MESSAGE===============");
-        Console.WriteLine(debug);
-        Console.WriteLine("===============END DEBUG MESSAGE===============");
-    }
-
-**rawOutputCallback:**
-
-    void rawOutputCallback(string output)
-    {
-        Console.WriteLine(output);
-    }
-
-**downloadStatusCallback:**
-
-    void downloadStatusCallback() //see below for definition of each index in this array
-    {
-         Object information = irc.getDownloadProgress("progress");
-         Object speedkbps = irc.getDownloadProgress("kbps");
-         Object status = irc.getDownloadProgress("status");
-         Object filename = irc.getDownloadProgress("filename");
-    }
-
-**userListReceivedCallback**
-
-    void userListReceivedCallback(string[] users) //see below for definition of each index in this array
-    {
-         foreach(string user in users){
-            Console.WriteLine(user);            
-         }
-    }
-    
-
-And here is a bit of gibrish code for sending messages to the irc server:
-    
-    while (true)  //irc output and such are handled in different threads
-    {
-        string Input = Console.ReadLine();
-        if (Input != null || Input != "" || Input != String.Empty)
-        {
-            irc.sendMessage(Input);
-        }
-    }
-
-
-For getting information about the download in progress (in `downloadStatusChangeCallback()`), you can use this function:
-
-`getDownloadProgress(string whichdownloaddetail)`
-
-This will return an array of strings when a download is running, but if there is no download while you are requesting information, it will return a empty array, except for the first index which will contain the string "NULL".
-
-Array that will be returned when downloading:
-
-| Whichdownloaddetail  | What it is    | Explanation |
-| ------------- |:-------------:| ----- |
-| dccstring     | DCC receive string     | The bot sends you a string with connection details.|
-| filename      | Filename               | Filename of the file that you currently are downloading. |
-| size          | Filesize               | Size of the file that you currently  are downloading. (In bytes)|
-| ip            | Server IP              | IP from the file server to which you have connected. |
-| port          | Server Port            | Port from the file server to which you have connected. |
-| pack          | Pack Number            | Packnumer corresponding to the file you have requested through XDCC.|
-| bot           | Bot Name               | Bot from which you requested the file. |
-| progress      | Progress               | Progress of completion is %.  |
-| status        | status of download/connection| Gives status about download and connection, such as, waiting, downloading, failed | etc
-| bps           | Bytes Per Second       | |
-| kbps          | KBytes Per Second      | |
-| mbps          | MBytes Per Second      | |
-
-
-
-### Full Example 
-An (quick and dirty) example can be found here: 
-[Example](https://github.com/EldinZenderink/SimpleIRCLib/blob/master/IrcLibTest/Program.cs)
-
-A winform example including video tutorial (v1.1.2): 
+### Tutorial
+A winform example including video tutorial (v1.1.2) **OLD - NOT SUPPORTED FOR v2.0.0**: 
 [YouTube](https://www.youtube.com/watch?v=Y5JPdwFwoSI)
+
+-New v2.0.0 and up tutorial comming soon!
 
 ### Development
 I will try to fix (significant) bugs as quick as possible, but due to my study taking a rollercoaster dive in a few days it might take a while before an actual update will appear. It is very barebone and does need some refinement. So, progress in development will come down to how much free time I have and how much of it I want to spend working on this library.
