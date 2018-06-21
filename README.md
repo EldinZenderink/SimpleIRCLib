@@ -85,6 +85,10 @@ It's main features are:
 - Under the hood DCC fixes for more stability and error handeling when downloads go wrong
 - **Changed Action based callback methods to Event handlers**
 
+2.1.0
+- Support for multiple .NET FrameWorks such as: .NET 4.5, .NET 4.6, .NET 4.7 & .NET CORE 2.0 & .NET CORE 2.1
+- Renamed a few properties.
+
 ### Wiki
 To get a better picture of the available methods and properties, go to this wiki:
 [SimpleIRCLib Wiki](https://github.com/EldinZenderink/SimpleIRCLib/wiki/SimpleIRCLib-Methods-Wiki#simpleirc)
