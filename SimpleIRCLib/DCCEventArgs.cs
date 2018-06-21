@@ -31,7 +31,7 @@ namespace SimpleIRCLib
             DccString = currentClient.NewDccString;
             FileName = currentClient.NewFileName;
             FileSize = currentClient.NewFileSize;
-            Ip = currentClient.NewIp;
+            Ip = currentClient.NewIP;
             Port = currentClient.NewPortNum;
             Pack = currentClient.PackNum;
             Bot = currentClient.BotName;

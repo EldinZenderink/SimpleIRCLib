@@ -15,27 +15,27 @@ namespace SimpleIRCLib
         /// <summary>
         /// Ip address of irc server
         /// </summary>
-        private string _newIP { get; set; }
+        public string NewIP{ get; set; }
         /// <summary>
         /// Port of irc server to connect to
         /// </summary>
-        private int _newPort { get; set; }
+        public int NewPort { get; set; }
         /// <summary>
         /// Username to register on irc server
         /// </summary>
-        private string _newUsername { get; set; }
+        public string NewUsername { get; set; }
         /// <summary>
         /// List with channels seperated with ',' to join when connecting to IRC server
         /// </summary
-        private string _newChannels { get; set; }
+        public string NewChannels { get; set; }
         /// <summary>
         /// Password to connect to a secured irc server
         /// </summary>
-        private string _newPassword { get; set; }
+        public string NewPassword { get; set; }
         /// <summary>
         /// download directory used for DCCClient.cs
         /// </summary>
-        private string _downloadDir { get; set; }
+        public string DownloadDir { get; set; }
 
         /// <summary>
         /// Irc Client for sending and receiving messages to a irc server 
@@ -52,12 +52,12 @@ namespace SimpleIRCLib
         /// </summary>
         public SimpleIRC()
         {
-            _newIP = "";
-            _newPort = 0;
-            _newUsername = "";
-            _newPassword = "";
-            _newChannels = "";
-            _downloadDir = "";
+            NewIP= "";
+            NewPort = 0;
+            NewUsername = "";
+            NewPassword = "";
+            NewChannels = "";
+            DownloadDir = "";
             IrcClient = new IrcClient();
             DccClient = new DCCClient();
         }
@@ -75,14 +75,14 @@ namespace SimpleIRCLib
         /// <param name="enableSSL">Timeout, optional parameter, where default value is 3000 milliseconds, the maximum time before a server needs to answer, otherwise errors are thrown.</param>
         public void SetupIrc(string ip, string username, string channels, int port = 0, string password = "", int timeout = 3000, bool enableSSL = true)
         {
-            _newIP = ip;
-            _newPort = port;
-            _newUsername = username;
-            _newPassword = password;
-            _newChannels = channels;
-            _downloadDir = "";
+            NewIP= ip;
+            NewPort = port;
+            NewUsername = username;
+            NewPassword = password;
+            NewChannels = channels;
+            DownloadDir = "";
             
-            IrcClient.SetConnectionInformation(ip, username, channels, DccClient,  _downloadDir, port, password, timeout, enableSSL);
+            IrcClient.SetConnectionInformation(ip, username, channels, DccClient,  DownloadDir, port, password, timeout, enableSSL);
 
         }
 
@@ -92,7 +92,8 @@ namespace SimpleIRCLib
         /// <param name="downloaddir"> Requires a path to a directory of type string as parameter.</param>
         public void SetCustomDownloadDir(string downloaddir)
         {
-            _downloadDir = downloaddir;
+            DownloadDir = downloaddir;
+            IrcClient.SetDownloadDirectory(downloaddir);
         }
 
         /// <summary>

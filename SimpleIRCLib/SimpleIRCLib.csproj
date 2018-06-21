@@ -1,58 +1,24 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{3D881A50-DB1A-464E-A51E-4CE5EB8BD5F1}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SimpleIRCLib</RootNamespace>
-    <AssemblyName>SimpleIRCLib</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
+    <TargetFrameworks>netcoreapp2.1;netcoreapp2.0;net47;net46;net45;</TargetFrameworks>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>2.1.0</Version>
+    <Authors>Eldin Zenderink</Authors>
+    <Company>None</Company>
+    <Description>A easy to use, easy to implent, IRC library with DCC (Download) support for C#.
+See for more information: 
+https://github.com/EldinZenderink/SimpleIRCLib</Description>
+    <PackageProjectUrl>https://github.com/EldinZenderink/SimpleIRCLib</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/EldinZenderink/SimpleIRCLib/blob/master/LICENSE</PackageLicenseUrl>
+    <RepositoryUrl>https://github.com/EldinZenderink/SimpleIRCLib</RepositoryUrl>
+    <RepositoryType>GitHub</RepositoryType>
+    <PackageTags>C# IRC DCC PROTOCOL irc protocol simple</PackageTags>
+    <PackageReleaseNotes>-- Now supports multiple frameworks such as: .net45 to .net47 &amp; core 2.0 &amp; core 2.1</PackageReleaseNotes>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\SimpleIRCLib.xml</DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup>
-    <SignAssembly>false</SignAssembly>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
+    <Folder Include="Properties\" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="DCCClient.cs" />
-    <Compile Include="DCCEventArgs.cs" />
-    <Compile Include="IrcClient.cs" />
-    <Compile Include="IrcEventArgs.cs" />
-    <Compile Include="IrcCommands.cs" />
-    <Compile Include="RFC1459Codes.cs" />
-    <Compile Include="SimpleIRC.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
 </Project>

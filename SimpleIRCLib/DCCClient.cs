@@ -42,7 +42,7 @@ namespace SimpleIRCLib
         /// <summary>
         /// Port of server of file location
         /// </summary>
-        public string NewIp { get; set; }
+        public string NewIP{ get; set; }
         /// <summary>
         /// Progress from 0-100 (%)
         /// </summary>
@@ -196,7 +196,7 @@ namespace SimpleIRCLib
                     string[] thaimportantnumbers = dccString.Split('"')[2].Trim().Split(' ');
                     if (thaimportantnumbers[0].Contains(":"))
                     {
-                        NewIp = thaimportantnumbers[0];
+                        NewIP= thaimportantnumbers[0];
                     }
                     else
                     {
@@ -206,7 +206,7 @@ namespace SimpleIRCLib
                             OnDccDebugMessage?.Invoke(this,
                                 new DCCDebugMessageArgs("DCCClient1: PARSING FOLLOWING IPBYTES: " + thaimportantnumbers[0], "DCC PARSER"));
                             string ipAddress = UInt64ToIPAddress(Int64.Parse(thaimportantnumbers[0]));
-                            NewIp = ipAddress;
+                            NewIP= ipAddress;
                         }
                         catch
                         {
@@ -215,7 +215,7 @@ namespace SimpleIRCLib
                     }
 
                     OnDccDebugMessage?.Invoke(this,
-                        new DCCDebugMessageArgs("DCCClient1: IP PARSED: " + NewIp, "DCC PARSER"));
+                        new DCCDebugMessageArgs("DCCClient1: IP PARSED: " + NewIP, "DCC PARSER"));
                     NewPortNum = int.Parse(thaimportantnumbers[1]);
                     NewFileSize = Int64.Parse(thaimportantnumbers[2]);
 
@@ -231,7 +231,7 @@ namespace SimpleIRCLib
 
                     if (dccString.Split(' ')[3].Contains(":"))
                     {
-                        NewIp = dccString.Split(' ')[3];
+                        NewIP= dccString.Split(' ')[3];
                     }
                     else
                     {
@@ -242,7 +242,7 @@ namespace SimpleIRCLib
                             OnDccDebugMessage?.Invoke(this,
                                 new DCCDebugMessageArgs("DCCClient2: PARSING FOLLOWING IPBYTES DIRECTLY: " + dccString.Split(' ')[3], "DCC PARSER"));
                             string ipAddress = UInt64ToIPAddress(Int64.Parse(dccString.Split(' ')[3]));
-                            NewIp = ipAddress;
+                            NewIP= ipAddress;
                         }
                         catch
                         {
@@ -251,7 +251,7 @@ namespace SimpleIRCLib
                         }
                     }
                     OnDccDebugMessage?.Invoke(this,
-                        new DCCDebugMessageArgs("DCCClient2: IP PARSED: " + NewIp, "DCC PARSER"));
+                        new DCCDebugMessageArgs("DCCClient2: IP PARSED: " + NewIP, "DCC PARSER"));
                     NewPortNum = int.Parse(dccString.Split(' ')[4]);
                     NewFileSize = Int64.Parse(dccString.Split(' ')[5]);
                     return true;
@@ -269,7 +269,7 @@ namespace SimpleIRCLib
 
                     if (thaimportantnumbers[0].Contains(":"))
                     {
-                        NewIp = thaimportantnumbers[0];
+                        NewIP= thaimportantnumbers[0];
                     }
                     else
                     {
@@ -279,7 +279,7 @@ namespace SimpleIRCLib
                             OnDccDebugMessage?.Invoke(this,
                                 new DCCDebugMessageArgs("DCCClient3: PARSING FOLLOWING IPBYTES DIRECTLY: " + thaimportantnumbers[0], "DCC PARSER"));
                             string ipAddress = UInt64ToIPAddress(Int64.Parse(thaimportantnumbers[0]));
-                            NewIp = ipAddress;
+                            NewIP= ipAddress;
                         }
                         catch
                         {
@@ -289,7 +289,7 @@ namespace SimpleIRCLib
 
 
                     OnDccDebugMessage?.Invoke(this,
-                        new DCCDebugMessageArgs("DCCClient3: IP PARSED: " + NewIp, "DCC PARSER"));
+                        new DCCDebugMessageArgs("DCCClient3: IP PARSED: " + NewIP, "DCC PARSER"));
                     NewPortNum = int.Parse(thaimportantnumbers[1]);
                     NewFileSize = Int64.Parse(thaimportantnumbers[2]);
                     return true;
@@ -302,7 +302,7 @@ namespace SimpleIRCLib
 
                     if (dccString.Split(' ')[6].Contains(":"))
                     {
-                        NewIp = dccString.Split(' ')[6];
+                        NewIP= dccString.Split(' ')[6];
                     } else
                     {
                         try
@@ -311,7 +311,7 @@ namespace SimpleIRCLib
                             OnDccDebugMessage?.Invoke(this,
                                 new DCCDebugMessageArgs("DCCClient4: PARSING FOLLOWING IPBYTES DIRECTLY: " + dccString.Split(' ')[6], "DCC PARSER"));
                             string ipAddress = UInt64ToIPAddress(Int64.Parse(dccString.Split(' ')[6]));
-                            NewIp = ipAddress;
+                            NewIP= ipAddress;
                         }
                         catch
                         {
@@ -321,7 +321,7 @@ namespace SimpleIRCLib
                     }
 
                     OnDccDebugMessage?.Invoke(this,
-                        new DCCDebugMessageArgs("DCCClient4: IP PARSED: " + NewIp, "DCC PARSER"));
+                        new DCCDebugMessageArgs("DCCClient4: IP PARSED: " + NewIP, "DCC PARSER"));
                     NewPortNum = int.Parse(dccString.Split(' ')[7]);
                     NewFileSize = Int64.Parse(dccString.Split(' ')[8]);
                     return true;
@@ -391,7 +391,7 @@ namespace SimpleIRCLib
                         new DCCDebugMessageArgs("File does not exist yet, start connection \n ", "DCC DOWNLOADER"));
 
                     //start connection with tcp server
-                    using (TcpClient dltcp = new TcpClient(NewIp, NewPortNum))
+                    using (TcpClient dltcp = new TcpClient(NewIP, NewPortNum))
                     {
                         using (NetworkStream dlstream = dltcp.GetStream())
                         {
@@ -651,11 +651,11 @@ namespace SimpleIRCLib
             {
                 OnDccDebugMessage?.Invoke(this,
                     new DCCDebugMessageArgs("DCCClient: converting ip: " + ip, "DCC IP PARSER"));
-                string newip = parts[3] + "." + parts[2] + "." + parts[1] + "." + parts[0];
+                string NewIP= parts[3] + "." + parts[2] + "." + parts[1] + "." + parts[0];
                 OnDccDebugMessage?.Invoke(this,
-                    new DCCDebugMessageArgs("DCCClient: to: " + newip, "DCC IP PARSER"));
+                    new DCCDebugMessageArgs("DCCClient: to: " + NewIP, "DCC IP PARSER"));
 
-                return newip;
+                return NewIP;
             } else
             {
                 OnDccDebugMessage?.Invoke(this,

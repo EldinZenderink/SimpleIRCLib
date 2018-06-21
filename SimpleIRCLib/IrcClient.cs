@@ -39,11 +39,11 @@ namespace SimpleIRCLib
         /// <summary>
         /// Port of irc server to connect to
         /// </summary>
-        private int _newPort;
+        private int _NewPort;
         /// <summary>
         /// Username to register on irc server
         /// </summary>
-        private string _newUsername;
+        private string _NewUsername;
         /// <summary>
         /// Password to connect to a secured irc server
         /// </summary>
@@ -55,7 +55,7 @@ namespace SimpleIRCLib
         /// <summary>
         /// List with channels seperated with ',' to join when connecting to IRC server
         /// </summary>
-        private string _newChannels;
+        private string _NewChannelss;
         /// <summary>
         /// timeout before throwing timeout errors (using OnDebugMessage)
         /// </summary>
@@ -75,7 +75,7 @@ namespace SimpleIRCLib
         /// <summary>
         /// for checking if client has started listening to the server
         /// </summary>
-        private bool _isClientRunning;
+        private bool _IsClientRunning;
         /// <summary>
         /// packnumber used to initialize dccclient downloader
         /// </summary>
@@ -127,7 +127,7 @@ namespace SimpleIRCLib
         public IrcClient()
         {
             _isConnectionEstablised = false;
-            _isClientRunning = false;
+            _IsClientRunning = false;
         }
 
         /// <summary>
@@ -146,12 +146,12 @@ namespace SimpleIRCLib
             DCCClient dccClient, string downloadDirectory, int port = 0, string password = "", int timeout = 3000, bool enableSSL = true)
         {
             _newIp = ip;
-            _newPort = port;
-            _newUsername = username;
+            _NewPort = port;
+            _NewUsername = username;
             _newPassword = password;
-            _newChannels = channels;
+            _NewChannelss = channels;
             _isConnectionEstablised = false;
-            _isClientRunning = false;
+            _IsClientRunning = false;
             _timeOut = timeout;
             _downloadDirectory = downloadDirectory;
             _dccClient = dccClient;
@@ -161,7 +161,7 @@ namespace SimpleIRCLib
             {
                 if (port == 0)
                 {
-                    port = 6697;
+                    _NewPort = 6697;
                 } else if (port != 6697)
                 {
                     OnDebugMessage?.Invoke(this, new IrcDebugMessageEventArgs("PORT: " + port.ToString() + " IS NOT COMMONLY USED FOR TLS/SSL CONNECTIONS, PREFER TO USE 6697 FOR SSL!", "SETUP WARNING"));
@@ -171,7 +171,7 @@ namespace SimpleIRCLib
             {
                 if (port == 0)
                 {
-                    port = 6667;
+                    _NewPort = 6667;
                 }
                 else if (port < 6665 && port > 6669)
                 {
@@ -186,6 +186,7 @@ namespace SimpleIRCLib
         /// <param name="downloadDirectory">Path to directory (creates it if it does not exist)</param>
         public void SetDownloadDirectory(string downloadDirectory)
         {
+            OnDebugMessage?.Invoke(this, new IrcDebugMessageEventArgs("SET DOWNLOAD DIRECTORY: " + downloadDirectory, "SETTING DOWNLOAD DIRECTORY"));
             _downloadDirectory = downloadDirectory;
         }
 
@@ -271,7 +272,7 @@ namespace SimpleIRCLib
         public void StartReceivingChat()
         {
 
-            _tcpClient = new TcpClient(_newIp, _newPort);
+            _tcpClient = new TcpClient(_newIp, _NewPort);
 
             int timeout = 0;
             while (!_tcpClient.Connected)
@@ -286,48 +287,59 @@ namespace SimpleIRCLib
             }
 
 
-            if (!_enableSSL)
+            try
             {
-                _networkStream = _tcpClient.GetStream(); Thread.Sleep(500);
-                _streamReader = new StreamReader(_networkStream);
-                _streamWriter = new StreamWriter(_networkStream);
-                _ircCommands = new IrcCommands(_networkStream);
-            }
-            else
-            {
-                _networkSStream = new SslStream(_tcpClient.GetStream());
-                _networkSStream.AuthenticateAsClient(_newIp);
-                _streamReader = new StreamReader(_networkSStream);
-                _streamWriter = new StreamWriter(_networkSStream);
-                _ircCommands = new IrcCommands(_networkSStream);
 
-            }
+                if (!_enableSSL)
+                {
+                    _networkStream = _tcpClient.GetStream(); Thread.Sleep(500);
+                    _streamReader = new StreamReader(_networkStream);
+                    _streamWriter = new StreamWriter(_networkStream);
+                    _ircCommands = new IrcCommands(_networkStream);
+                }
+                else
+                {
+                    _networkSStream = new SslStream(_tcpClient.GetStream());
+                    _networkSStream.AuthenticateAsClient(_newIp);
+                    _streamReader = new StreamReader(_networkSStream);
+                    _streamWriter = new StreamWriter(_networkSStream);
+                    _ircCommands = new IrcCommands(_networkSStream);
 
-
-            _isConnectionEstablised = true;
-            OnDebugMessage?.Invoke(this, new IrcDebugMessageEventArgs("CONNECTED TO TCP SOCKET", "IRC SETUP"));
-
+                }
 
 
-            if (_newPassword.Length > 0)
-            {
-                if (!_ircCommands.SetPassWord(_newPassword))
+
+                _isConnectionEstablised = true;
+                OnDebugMessage?.Invoke(this, new IrcDebugMessageEventArgs("CONNECTED TO TCP SOCKET", "IRC SETUP"));
+
+
+
+                if (_newPassword.Length > 0)
+                {
+                    if (!_ircCommands.SetPassWord(_newPassword))
+                    {
+                        OnDebugMessage?.Invoke(this, new IrcDebugMessageEventArgs(_ircCommands.GetErrorMessage(), "IRC SETUP ERROR"));
+                        _isConnectionEstablised = false;
+                    }
+                }
+                Debug.WriteLine("Joining channels: " + _NewChannelss);
+                if (!_ircCommands.JoinNetwork(_NewUsername, _NewChannelss))
                 {
                     OnDebugMessage?.Invoke(this, new IrcDebugMessageEventArgs(_ircCommands.GetErrorMessage(), "IRC SETUP ERROR"));
                     _isConnectionEstablised = false;
                 }
             }
-            Debug.WriteLine("Joining channels: " + _newChannels);
-            if (!_ircCommands.JoinNetwork(_newUsername, _newChannels))
+            catch (Exception ex)
             {
-                OnDebugMessage?.Invoke(this, new IrcDebugMessageEventArgs(_ircCommands.GetErrorMessage(), "IRC SETUP ERROR"));
-                _isConnectionEstablised = false;
+                OnDebugMessage?.Invoke(this, new IrcDebugMessageEventArgs(ex.ToString(), "IRC SETUP"));
             }
+
+
 
             if (_isConnectionEstablised)
             {
                 OnDebugMessage?.Invoke(this, new IrcDebugMessageEventArgs("CONNECTED TO IRC SERVER", "IRC SETUP"));
-
+                _stopTask = false;
                 Task.Run(() => ReceiveChat());
             }
         }
@@ -351,7 +363,7 @@ namespace SimpleIRCLib
 
                 Dictionary<string, List<string>> usersPerChannelDictionary = new Dictionary<string, List<string>>();
 
-                _isClientRunning = true;
+                _IsClientRunning = true;
                 _isConnectionEstablised = true;
                 while (!_stopTask)
                 {
@@ -428,7 +440,7 @@ namespace SimpleIRCLib
                         };
                     }
 
-                    if (ircData.Contains("DCC SEND") && ircData.Contains(_newUsername))
+                    if (ircData.Contains("DCC SEND") && ircData.Contains(_NewUsername))
                     {
                         _dccClient.StartDownloader(ircData, _downloadDirectory, _bot, _packNumber, this);
                     }
@@ -439,11 +451,11 @@ namespace SimpleIRCLib
                         //:irc.x2x.cc 353 RoflHerp = #RareIRC :RoflHerp @MrRareie
                         try
                         {
-                            string channel = ircData.Split(new[] { " " + _newUsername + " ="}, StringSplitOptions.None)[1].Split(':')[0].Replace(" ", string.Empty); 
-                            string userListFullString = ircData.Split(new[] { " " + _newUsername + " =" }, StringSplitOptions.None)[1].Split(':')[1];
+                            string channel = ircData.Split(new[] { " " + _NewUsername + " ="}, StringSplitOptions.None)[1].Split(':')[0].Replace(" ", string.Empty); 
+                            string userListFullString = ircData.Split(new[] { " " + _NewUsername + " =" }, StringSplitOptions.None)[1].Split(':')[1];
                            
 
-                            if (!channel.Contains(_newUsername) && !channel.Contains("="))
+                            if (!channel.Contains(_NewUsername) && !channel.Contains("="))
                             {
                                 string[] users = userListFullString.Split(' ');
                                 if (usersPerChannelDictionary.ContainsKey(channel))
@@ -453,7 +465,7 @@ namespace SimpleIRCLib
 
                                     foreach (string name in users)
                                     {
-                                        if (!name.Contains(_newUsername))
+                                        if (!name.Contains(_NewUsername))
                                         {
                                             currentUsers.Add(name);
                                         }
@@ -501,7 +513,7 @@ namespace SimpleIRCLib
                     QuitConnect();
                 }
             }
-            _isClientRunning = false;
+            _IsClientRunning = false;
         }   
 
        
@@ -564,7 +576,7 @@ namespace SimpleIRCLib
                 if (input.Split(' ').Length > 0)
                 {
                     string channels = input.Split(' ')[1];
-                    _newChannels += channels;
+                    _NewChannelss += channels;
                     return WriteIrc("JOIN " + channels);
                 }
                 else
@@ -582,7 +594,7 @@ namespace SimpleIRCLib
             }
             else
             {
-                return WriteIrc("PRIVMSG " + _newChannels + " :" + input);
+                return WriteIrc("PRIVMSG " + _NewChannelss + " :" + input);
             }
 
           
@@ -651,7 +663,7 @@ namespace SimpleIRCLib
                 if (input.Split(' ').Length > 0)
                 {
                     string channels = input.Split(' ')[1];
-                    _newChannels += channels;
+                    _NewChannelss += channels;
                     return WriteIrc("JOIN " + channels);
                 }
                 else
@@ -698,7 +710,7 @@ namespace SimpleIRCLib
                 return WriteIrc("NAMES " + channel);
             } else
             {
-                return WriteIrc("NAMES " + _newChannels);
+                return WriteIrc("NAMES " + _NewChannelss);
             }
         }
 
@@ -780,7 +792,7 @@ namespace SimpleIRCLib
         /// <returns>true or false depending if the client is running or not</returns>
         public bool IsClientRunning()
         {
-            return _isClientRunning;
+            return _IsClientRunning;
         }
     }
 

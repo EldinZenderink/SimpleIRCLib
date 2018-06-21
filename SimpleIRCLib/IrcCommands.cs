@@ -138,27 +138,30 @@ namespace SimpleIRCLib
                 try
                 {
                     string ircData = _reader.ReadLine();
-                    Debug.WriteLine("Got response: " + ircData);
-
-                    if (ircData.Contains("PING"))
+                    if (ircData != null)
                     {
-                        string pingID = ircData.Split(':')[1];
-                        _writer.WriteLine("PONG :" + pingID);
-                        _writer.Flush();
-                    }
-
-                    if (CheckMessageForError(ircData))
-                    {
-                        Debug.WriteLine("Checking 266 = " + _responseNumber.ToString());
-                        if (_responseNumber == 266)
+                        if (ircData.Contains("PING"))
                         {
-                            return JoinChannel(channels, user);
+                            string pingID = ircData.Split(':')[1];
+                            _writer.WriteLine("PONG :" + pingID);
+                            _writer.Flush();
+                        }
+
+                        if (CheckMessageForError(ircData))
+                        {
+                            if (_responseNumber == 266)
+                            {
+                                return JoinChannel(channels, user);
+                            }
                         }
                     }
+                    Thread.Sleep(1);
                 }
                 catch (Exception e)
                 {
-                    
+
+                    Debug.WriteLine("RECEIVED: " + e.ToString());
+                    return false;
                 }
             }
         }
@@ -175,24 +178,25 @@ namespace SimpleIRCLib
 
             _writer.WriteLine("JOIN " + channels + Environment.NewLine);
             _writer.Flush();
-            Debug.WriteLine("Joining channel: " + _channels) ;
             while (true)
             {
 
                 string ircData = _reader.ReadLine();
-                Debug.WriteLine("Response: " + ircData);
-                if (ircData.Contains("PING"))
+                if (ircData != null)
                 {
-                    string pingID = ircData.Split(':')[1];
-                    _writer.WriteLine("PONG :" + pingID);
-                    _writer.Flush();
-                }
+                    if (ircData.Contains("PING"))
+                    {
+                        string pingID = ircData.Split(':')[1];
+                        _writer.WriteLine("PONG :" + pingID);
+                        _writer.Flush();
+                    }
 
-                if (ircData.Contains(username) && ircData.Contains("JOIN"))
-                {
-                    return true;
+                    if (ircData.Contains(username) && ircData.Contains("JOIN"))
+                    {
+                        return true;
+                    }
                 }
-
+                Thread.Sleep(1);
             }
         }
 
@@ -220,10 +224,8 @@ namespace SimpleIRCLib
         public bool CheckMessageForError(string message)
         {
             string codeString = message.Split(' ')[1].Trim();
-            Debug.WriteLine("CODE: " + codeString);
             if (int.TryParse(codeString, out _responseNumber))
             {
-                Debug.WriteLine("parsed number: " + _responseNumber.ToString());
                 foreach (string errorMessage in RFC1459Codes.ListWithErrors)
                 {
                     if (errorMessage.Contains(codeString))
