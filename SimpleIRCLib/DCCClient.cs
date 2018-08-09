@@ -388,11 +388,20 @@ namespace SimpleIRCLib
                 if (!File.Exists(dlDirAndFileName))
                 {
                     OnDccDebugMessage?.Invoke(this,
-                        new DCCDebugMessageArgs("File does not exist yet, start connection \n ", "DCC DOWNLOADER"));
+                        new DCCDebugMessageArgs("File does not exist yet, start connection with: " + NewIP + ":" + NewPortNum + Environment.NewLine, "DCC DOWNLOADER"));
 
                     //start connection with tcp server
-                    using (TcpClient dltcp = new TcpClient(NewIP, NewPortNum))
+                    using (TcpClient dltcp = new TcpClient(AddressFamily.InterNetworkV6))
                     {
+                        if (NewIP.Contains(":"))
+                        {
+                            IPAddress ip = IPAddress.Parse(NewIP);
+                            dltcp.Connect(ip, NewPortNum);
+                        }
+                        else
+                        {
+                            dltcp.Connect(NewIP, NewPortNum);
+                        }
                         using (NetworkStream dlstream = dltcp.GetStream())
                         {
                             //succesfully connected to tcp server, status is downloading
