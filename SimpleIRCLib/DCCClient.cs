@@ -389,19 +389,15 @@ namespace SimpleIRCLib
                 {
                     OnDccDebugMessage?.Invoke(this,
                         new DCCDebugMessageArgs("File does not exist yet, start connection with: " + NewIP + ":" + NewPortNum + Environment.NewLine, "DCC DOWNLOADER"));
-
+                    Thread.Sleep(500);
                     //start connection with tcp server
-                    using (TcpClient dltcp = new TcpClient(AddressFamily.InterNetworkV6))
+
+                    IPAddress ip = IPAddress.Parse(NewIP);
+
+                    using (TcpClient dltcp = new TcpClient(ip.AddressFamily))
                     {
-                        if (NewIP.Contains(":"))
-                        {
-                            IPAddress ip = IPAddress.Parse(NewIP);
-                            dltcp.Connect(ip, NewPortNum);
-                        }
-                        else
-                        {
-                            dltcp.Connect(NewIP, NewPortNum);
-                        }
+
+                        dltcp.Connect(ip, NewPortNum);
                         using (NetworkStream dlstream = dltcp.GetStream())
                         {
                             //succesfully connected to tcp server, status is downloading

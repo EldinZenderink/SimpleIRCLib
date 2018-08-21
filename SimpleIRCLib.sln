@@ -6,9 +6,6 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleIRCLib", "SimpleIRCLib\SimpleIRCLib.csproj", "{3D881A50-DB1A-464E-A51E-4CE5EB8BD5F1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IrcLibTest", "IrcLibTest\IrcLibTest.csproj", "{27C58F1A-4851-4A5B-85F7-C387971543DA}"
-	ProjectSection(ProjectDependencies) = postProject
-		{3D881A50-DB1A-464E-A51E-4CE5EB8BD5F1} = {3D881A50-DB1A-464E-A51E-4CE5EB8BD5F1}
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FormExample", "FormExample\FormExample.csproj", "{A46528E0-6BB9-4200-8276-3F840E0A7C72}"
 EndProject
