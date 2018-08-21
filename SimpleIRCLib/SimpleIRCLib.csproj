@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.1;netcoreapp2.0;net47;net46;net45;</TargetFrameworks>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>2.1.2</Version>
+    <Version>2.2.0</Version>
     <Authors>Eldin Zenderink</Authors>
     <Company>None</Company>
     <Description>A easy to use, easy to implent, IRC library with DCC (Download) support for C#.
@@ -14,8 +14,7 @@ https://github.com/EldinZenderink/SimpleIRCLib</Description>
     <RepositoryUrl>https://github.com/EldinZenderink/SimpleIRCLib</RepositoryUrl>
     <RepositoryType>GitHub</RepositoryType>
     <PackageTags>C# IRC DCC PROTOCOL irc protocol simple</PackageTags>
-    <PackageReleaseNotes>-- DCC Download bug where it crashed on downloading using ipv4 address due to it thinking it was a ipv6 address.
--- Known issue: IPv6 Still not working. (There is no documentation about the use of ipv6 with xdcc, though some bots actually use it).</PackageReleaseNotes>
+    <PackageReleaseNotes>-- Switch to netstandard2.0</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
