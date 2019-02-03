@@ -41,8 +41,13 @@ namespace SimpleIRCLib
             Status = currentClient.Status;
             Progress = currentClient.Progress;
             FilePath = currentClient.CurrentFilePath;
+            Buffer = currentClient.Buffer;
         }
 
+        /// <summary>
+        /// To access the latest downloaded data (per second). 
+        /// </summary>
+        public List<byte> Buffer { get; }
         /// <summary>
         /// Raw DCC String used for getting the file location (server) and some basic file information
         /// </summary>

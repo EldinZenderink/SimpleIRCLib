@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.IO;
 using System.Text;
+using System.Collections.Generic;
 
 namespace SimpleIRCLib
 {
@@ -81,9 +82,16 @@ namespace SimpleIRCLib
         public string CurrentFilePath { get; set; }
 
         /// <summary>
+        /// To provide the latest data downloaded to outside the library
+        /// </summary>
+        public List<byte> Buffer { get; set; }
+
+        /// <summary>
         /// Local bool to tell the while loop within the download thread to stop.
         /// </summary>
         private bool _shouldAbort = false;
+
+        
 
         /// <summary>
         /// Client that is currently running, used for sending abort messages when a download fails, or a dcc string fails to parse.
@@ -341,6 +349,8 @@ namespace SimpleIRCLib
 
             UpdateStatus("WAITING");
 
+            Buffer = new List<byte>();
+
             //combining download directory path with filename
 
             if (_curDownloadDir != null)
@@ -463,10 +473,14 @@ namespace SimpleIRCLib
                                         oldBytesReceived = bytesReceived;
                                         start = DateTime.Now;
                                         UpdateStatus("DOWNLOADING");
+                                        Buffer.Clear();
                                     }
 
                                     //count bytes received
                                     count = dlstream.Read(buffer, 0, buffer.Length);
+
+                                    //write to buffer
+                                    Buffer.AddRange(buffer);
 
                                     //write to file
                                     writeStream.Write(buffer, 0, count);
