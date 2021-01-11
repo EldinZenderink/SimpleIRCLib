@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Text.RegularExpressions;
+using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
-using System.Threading;
-using System.IO;
 using System.Text;
-using System.Collections.Generic;
+using System.Threading;
 
 namespace SimpleIRCLib
 {
@@ -43,7 +42,7 @@ namespace SimpleIRCLib
         /// <summary>
         /// Port of server of file location
         /// </summary>
-        public string NewIP{ get; set; }
+        public string NewIP { get; set; }
         /// <summary>
         /// Progress from 0-100 (%)
         /// </summary>
@@ -91,7 +90,7 @@ namespace SimpleIRCLib
         /// </summary>
         private bool _shouldAbort = false;
 
-        
+
 
         /// <summary>
         /// Client that is currently running, used for sending abort messages when a download fails, or a dcc string fails to parse.
@@ -143,7 +142,7 @@ namespace SimpleIRCLib
                 if (isParsed)
                 {
                     _shouldAbort = false;
-                   //start the downloader thread
+                    //start the downloader thread
                     _downloader = new Thread(new ThreadStart(this.Downloader));
                     _downloader.IsBackground = true;
                     _downloader.Start();
@@ -204,7 +203,7 @@ namespace SimpleIRCLib
                     string[] thaimportantnumbers = dccString.Split('"')[2].Trim().Split(' ');
                     if (thaimportantnumbers[0].Contains(":"))
                     {
-                        NewIP= thaimportantnumbers[0];
+                        NewIP = thaimportantnumbers[0];
                     }
                     else
                     {
@@ -214,7 +213,7 @@ namespace SimpleIRCLib
                             OnDccDebugMessage?.Invoke(this,
                                 new DCCDebugMessageArgs("DCCClient1: PARSING FOLLOWING IPBYTES: " + thaimportantnumbers[0], "DCC PARSER"));
                             string ipAddress = UInt64ToIPAddress(Int64.Parse(thaimportantnumbers[0]));
-                            NewIP= ipAddress;
+                            NewIP = ipAddress;
                         }
                         catch
                         {
@@ -239,7 +238,7 @@ namespace SimpleIRCLib
 
                     if (dccString.Split(' ')[3].Contains(":"))
                     {
-                        NewIP= dccString.Split(' ')[3];
+                        NewIP = dccString.Split(' ')[3];
                     }
                     else
                     {
@@ -250,7 +249,7 @@ namespace SimpleIRCLib
                             OnDccDebugMessage?.Invoke(this,
                                 new DCCDebugMessageArgs("DCCClient2: PARSING FOLLOWING IPBYTES DIRECTLY: " + dccString.Split(' ')[3], "DCC PARSER"));
                             string ipAddress = UInt64ToIPAddress(Int64.Parse(dccString.Split(' ')[3]));
-                            NewIP= ipAddress;
+                            NewIP = ipAddress;
                         }
                         catch
                         {
@@ -264,7 +263,8 @@ namespace SimpleIRCLib
                     NewFileSize = Int64.Parse(dccString.Split(' ')[5]);
                     return true;
                 }
-            } else
+            }
+            else
             {
                 BotName = dccString.Split('!')[0];
                 if (dccString.Contains("\""))
@@ -277,7 +277,7 @@ namespace SimpleIRCLib
 
                     if (thaimportantnumbers[0].Contains(":"))
                     {
-                        NewIP= thaimportantnumbers[0];
+                        NewIP = thaimportantnumbers[0];
                     }
                     else
                     {
@@ -287,7 +287,7 @@ namespace SimpleIRCLib
                             OnDccDebugMessage?.Invoke(this,
                                 new DCCDebugMessageArgs("DCCClient3: PARSING FOLLOWING IPBYTES DIRECTLY: " + thaimportantnumbers[0], "DCC PARSER"));
                             string ipAddress = UInt64ToIPAddress(Int64.Parse(thaimportantnumbers[0]));
-                            NewIP= ipAddress;
+                            NewIP = ipAddress;
                         }
                         catch
                         {
@@ -301,7 +301,8 @@ namespace SimpleIRCLib
                     NewPortNum = int.Parse(thaimportantnumbers[1]);
                     NewFileSize = Int64.Parse(thaimportantnumbers[2]);
                     return true;
-                } else
+                }
+                else
                 {
                     NewFileName = dccString.Split(' ')[5];
 
@@ -310,8 +311,9 @@ namespace SimpleIRCLib
 
                     if (dccString.Split(' ')[6].Contains(":"))
                     {
-                        NewIP= dccString.Split(' ')[6];
-                    } else
+                        NewIP = dccString.Split(' ')[6];
+                    }
+                    else
                     {
                         try
                         {
@@ -319,7 +321,7 @@ namespace SimpleIRCLib
                             OnDccDebugMessage?.Invoke(this,
                                 new DCCDebugMessageArgs("DCCClient4: PARSING FOLLOWING IPBYTES DIRECTLY: " + dccString.Split(' ')[6], "DCC PARSER"));
                             string ipAddress = UInt64ToIPAddress(Int64.Parse(dccString.Split(' ')[6]));
-                            NewIP= ipAddress;
+                            NewIP = ipAddress;
                         }
                         catch
                         {
@@ -335,7 +337,7 @@ namespace SimpleIRCLib
                     return true;
 
                 }
-                
+
 
             }
 
@@ -390,7 +392,7 @@ namespace SimpleIRCLib
                     Directory.CreateDirectory(_curDownloadDir);
                 }
             }
-        
+
             string dlDirAndFileName = Path.Combine(_curDownloadDir, NewFileName);
             CurrentFilePath = dlDirAndFileName;
             try
@@ -414,9 +416,9 @@ namespace SimpleIRCLib
                             UpdateStatus("DOWNLOADING");
 
                             //values to keep track of progress
-                            Int64  bytesReceived = 0;
-                            Int64  oldBytesReceived = 0;
-                            Int64  oneprocent = NewFileSize / 100;
+                            Int64 bytesReceived = 0;
+                            Int64 oldBytesReceived = 0;
+                            Int64 oneprocent = NewFileSize / 100;
                             DateTime start = DateTime.Now;
                             bool timedOut = false;
 
@@ -430,23 +432,26 @@ namespace SimpleIRCLib
                                 OnDccDebugMessage?.Invoke(this,
                                     new DCCDebugMessageArgs("Big file, big buffer (1 mb) \n ", "DCC DOWNLOADER"));
                                 buffer = new byte[16384];
-                            } else if(NewFileSize < 1048576 && NewFileSize > 2048)
+                            }
+                            else if (NewFileSize < 1048576 && NewFileSize > 2048)
                             {
                                 OnDccDebugMessage?.Invoke(this,
                                     new DCCDebugMessageArgs("Smaller file (< 1 mb), smaller buffer (2 kb) \n ", "DCC DOWNLOADER"));
                                 buffer = new byte[2048];
-                            } else if (NewFileSize < 2048 && NewFileSize > 128)
+                            }
+                            else if (NewFileSize < 2048 && NewFileSize > 128)
                             {
                                 OnDccDebugMessage?.Invoke(this,
                                     new DCCDebugMessageArgs("Small file (< 2kb mb), small buffer (128 b) \n ", "DCC DOWNLOADER"));
                                 buffer = new byte[128];
-                            } else
+                            }
+                            else
                             {
                                 OnDccDebugMessage?.Invoke(this,
                                     new DCCDebugMessageArgs("Tiny file (< 128 b), tiny buffer (2 b) \n ", "DCC DOWNLOADER"));
                                 buffer = new byte[2];
                             }
-                                
+
 
                             //create file to write to
                             using (FileStream writeStream = new FileStream(dlDirAndFileName, FileMode.Append, FileAccess.Write, FileShare.Read))
@@ -464,7 +469,7 @@ namespace SimpleIRCLib
                                     }
                                     //keep track of progress
                                     DateTime end = DateTime.Now;
-                                    if (end.Second !=  start.Second)
+                                    if (end.Second != start.Second)
                                     {
 
                                         BytesPerSecond = bytesReceived - oldBytesReceived;
@@ -518,7 +523,8 @@ namespace SimpleIRCLib
                                     }
 
                                     UpdateStatus("ABORTED");
-                                } else
+                                }
+                                else
                                 {
 
                                     //consider 95% downloaded as done, files are sequentually downloaded, sometimes download stops early, but the file still is usable
@@ -567,7 +573,7 @@ namespace SimpleIRCLib
                     UpdateStatus("FAILED: ALREADY EXISTS");
                 }
                 OnDccDebugMessage?.Invoke(this,
-                    new DCCDebugMessageArgs("File has been downloaded! \n File Location:" + CurrentFilePath , "DCC DOWNLOADER"));
+                    new DCCDebugMessageArgs("File has been downloaded! \n File Location:" + CurrentFilePath, "DCC DOWNLOADER"));
 
             }
             catch (SocketException e)
@@ -587,7 +593,7 @@ namespace SimpleIRCLib
                 UpdateStatus("FAILED: UNKNOWN");
             }
             IsDownloading = false;
-        }        
+        }
 
         /// <summary>
         /// Fires the event with the update about the download currently running
@@ -666,16 +672,17 @@ namespace SimpleIRCLib
         private string ReverseIp(string ip)
         {
             string[] parts = ip.Trim().Split('.');
-            if(parts.Length >= 3)
+            if (parts.Length >= 3)
             {
                 OnDccDebugMessage?.Invoke(this,
                     new DCCDebugMessageArgs("DCCClient: converting ip: " + ip, "DCC IP PARSER"));
-                string NewIP= parts[3] + "." + parts[2] + "." + parts[1] + "." + parts[0];
+                string NewIP = parts[3] + "." + parts[2] + "." + parts[1] + "." + parts[0];
                 OnDccDebugMessage?.Invoke(this,
                     new DCCDebugMessageArgs("DCCClient: to: " + NewIP, "DCC IP PARSER"));
 
                 return NewIP;
-            } else
+            }
+            else
             {
                 OnDccDebugMessage?.Invoke(this,
                     new DCCDebugMessageArgs("DCCClient: converting ip: " + ip, "DCC IP PARSER"));

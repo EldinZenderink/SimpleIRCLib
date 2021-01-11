@@ -35,10 +35,6 @@
     <DocumentationFile>bin\Release\FormExample.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="SimpleIRCLib, Version=1.2.6714.42928, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\SimpleIRCLib\bin\Debug\SimpleIRCLib.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -93,6 +89,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SimpleIRCLib\SimpleIRCLib.csproj">
+      <Project>{3d881a50-db1a-464e-a51e-4ce5eb8bd5f1}</Project>
+      <Name>SimpleIRCLib</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

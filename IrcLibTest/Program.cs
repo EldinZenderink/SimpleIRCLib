@@ -1,10 +1,7 @@
-﻿using System;
+﻿using SimpleIRCLib;
+
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SimpleIRCLib;
-using System.Threading;
 
 namespace IrcLibTest
 {
@@ -24,7 +21,7 @@ namespace IrcLibTest
             Console.WriteLine("Server IP(default is : irc.rizon.net) = ");
             if ((ip = Console.ReadLine()) == "")
             {
-                ip = "irc.rizon.net";
+                ip = "irc.abjects.net";
             }
 
             Console.WriteLine("Server Port(default is : 6697 with ssl enabled) = ");
@@ -40,7 +37,7 @@ namespace IrcLibTest
             Console.WriteLine("Username(default is : RareIRC_Client) = ");
             if ((username = Console.ReadLine()) == "")
             {
-                username = "RareIRC_ConsoleTestClient";
+                username = "AbstractShitFace";
             }
 
             Console.WriteLine("Password(not working yet, default is : ) = ");
@@ -52,12 +49,12 @@ namespace IrcLibTest
             Console.WriteLine("Channel(default is : #RareIRC) = ");
             if ((channel = Console.ReadLine()) == "")
             {
-                channel = "#RareIRC";
+                channel = "#beast-xdcc";
             }
 
             irc = new SimpleIRC();
 
-            irc.SetupIrc(ip, username, channel, port);
+            irc.SetupIrc(ip, username, channel, port, ignoreCertificateErrors: true);
 
             irc.IrcClient.OnDebugMessage += debugOutputCallback;
             irc.IrcClient.OnMessageReceived += chatOutputCallback;
@@ -71,7 +68,6 @@ namespace IrcLibTest
 
             while (true)
             {
-
                 string Input = Console.ReadLine();
                 if (Input != null || Input != "" || Input != String.Empty && irc.IsClientRunning())
                 {
@@ -84,6 +80,9 @@ namespace IrcLibTest
         public static void downloadStatusChanged(object source, DCCEventArgs args)
         {
             Console.WriteLine("===============DCC EVENT===============");
+            Console.WriteLine("DOWNLOAD Bot: " + args.Bot);
+            Console.WriteLine("DOWNLOAD BytesPerSecond: " + args.BytesPerSecond);
+            Console.WriteLine("DOWNLOAD DccString: " + args.DccString);
             Console.WriteLine("DOWNLOAD STATUS: " + args.Status);
             Console.WriteLine("DOWNLOAD FILENAME: " + args.FileName);
             Console.WriteLine("DOWNLOAD PROGRESS: " + args.Progress + "%");
@@ -115,7 +114,7 @@ namespace IrcLibTest
 
         public static void userListCallback(object source, IrcUserListReceivedEventArgs args)
         {
-            foreach(KeyValuePair<string, List<string>> usersPerChannel in args.UsersPerChannel)
+            foreach (KeyValuePair<string, List<string>> usersPerChannel in args.UsersPerChannel)
             {
                 Console.WriteLine("===============USERS ON CHANNEL " + usersPerChannel.Key + " ===============");
                 foreach (string user in usersPerChannel.Value)

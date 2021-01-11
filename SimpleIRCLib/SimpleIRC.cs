@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Reflection;
-using System.Threading;
+﻿using System.Threading;
 
 namespace SimpleIRCLib
 {
@@ -15,7 +12,7 @@ namespace SimpleIRCLib
         /// <summary>
         /// Ip address of irc server
         /// </summary>
-        public string NewIP{ get; set; }
+        public string NewIP { get; set; }
         /// <summary>
         /// Port of irc server to connect to
         /// </summary>
@@ -52,7 +49,7 @@ namespace SimpleIRCLib
         /// </summary>
         public SimpleIRC()
         {
-            NewIP= "";
+            NewIP = "";
             NewPort = 0;
             NewUsername = "";
             NewPassword = "";
@@ -73,16 +70,16 @@ namespace SimpleIRCLib
         /// <param name="password">Password, optional parameter, where default value is "", can be used to connect to a password protected server.</param>
         /// <param name="timeout">Timeout, optional parameter, where default value is 3000 milliseconds, the maximum time before a server needs to answer, otherwise errors are thrown.</param>
         /// <param name="enableSSL">Timeout, optional parameter, where default value is 3000 milliseconds, the maximum time before a server needs to answer, otherwise errors are thrown.</param>
-        public void SetupIrc(string ip, string username, string channels, int port = 0, string password = "", int timeout = 3000, bool enableSSL = true)
+        public void SetupIrc(string ip, string username, string channels, int port = 0, string password = "", int timeout = 3000, bool enableSSL = true, bool ignoreCertificateErrors = false)
         {
-            NewIP= ip;
+            NewIP = ip;
             NewPort = port;
             NewUsername = username;
             NewPassword = password;
             NewChannels = channels;
             DownloadDir = "";
-            
-            IrcClient.SetConnectionInformation(ip, username, channels, DccClient,  DownloadDir, port, password, timeout, enableSSL);
+
+            IrcClient.SetConnectionInformation(ip, username, channels, DccClient, DownloadDir, port, password, timeout, enableSSL, ignoreCertificateErrors);
 
         }
 
@@ -156,7 +153,7 @@ namespace SimpleIRCLib
         {
             return IrcClient.StopXDCCDownload();
         }
-        
+
         /// <summary>
         ///returns true or false upon calling this method, for telling you if the downlaod has been stopped or not
         /// </summary>
