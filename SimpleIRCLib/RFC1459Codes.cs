@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SimpleIRCLib
+﻿namespace SimpleIRCLib
 {
     /// <summary>
     /// Contians all the error codes specified by the RFC1459 protocol

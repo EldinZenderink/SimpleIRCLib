@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net.Security;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace SimpleIRCLib
 {
@@ -107,7 +104,8 @@ namespace SimpleIRCLib
                     _responseNumber = 461;
                     _errorMessage = "PASSWORD COMMAND NEEDS MORE PARAMETERS";
                     return false;
-                }else if (ircData.Contains("004"))
+                }
+                else if (ircData.Contains("004"))
                 {
                     return true;
                 }

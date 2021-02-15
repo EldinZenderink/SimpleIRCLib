@@ -1,12 +1,12 @@
 ﻿using System;
-using System.Threading.Tasks;
-using System.Net.Sockets;
-using System.IO;
-using System.Threading;
-using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Net.Security;
+using System.Net.Sockets;
+using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SimpleIRCLib
 {
@@ -68,6 +68,10 @@ namespace SimpleIRCLib
         /// for enabling tls/ssl secured connection to the irc server
         /// </summary>
         private bool _enableSSL;
+        /// <summary>
+        /// for irgnoring self signed certificates
+        /// </summary>
+        private bool _ignoreCertificateErrors;
         /// <summary>
         /// for checking if a connection is succesfully established
         /// </summary>
@@ -143,7 +147,7 @@ namespace SimpleIRCLib
         /// <param name="timeout">Timeout, optional parameter, where default value is 3000 milliseconds, the maximum time before a server needs to answer, otherwise errors are thrown.</param>
         /// <param name="enableSSL">Timeout, optional parameter, where default value is 3000 milliseconds, the maximum time before a server needs to answer, otherwise errors are thrown.</param>
         public void SetConnectionInformation(string ip, string username, string channels,
-            DCCClient dccClient, string downloadDirectory, int port = 0, string password = "", int timeout = 3000, bool enableSSL = true)
+            DCCClient dccClient, string downloadDirectory, int port = 0, string password = "", int timeout = 3000, bool enableSSL = true, bool ignoreSelfSignedCertificate = false)
         {
             _newIp = ip;
             _NewPort = port;
@@ -162,7 +166,8 @@ namespace SimpleIRCLib
                 if (port == 0)
                 {
                     _NewPort = 6697;
-                } else if (port != 6697)
+                }
+                else if (port != 6697)
                 {
                     OnDebugMessage?.Invoke(this, new IrcDebugMessageEventArgs("PORT: " + port.ToString() + " IS NOT COMMONLY USED FOR TLS/SSL CONNECTIONS, PREFER TO USE 6697 FOR SSL!", "SETUP WARNING"));
                 }
@@ -216,7 +221,7 @@ namespace SimpleIRCLib
                 OnDebugMessage?.Invoke(this, new IrcDebugMessageEventArgs("IRC CLIENT SUCCESFULLY RUNNING", "IRC SETUP"));
                 return true;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 OnDebugMessage?.Invoke(this, new IrcDebugMessageEventArgs(e.ToString(), "SETUP ERROR"));
                 return false;
@@ -299,12 +304,11 @@ namespace SimpleIRCLib
                 }
                 else
                 {
-                    _networkSStream = new SslStream(_tcpClient.GetStream());
+                    _networkSStream = _ignoreCertificateErrors ? new SslStream(_tcpClient.GetStream(), true, (sender, certificate, chain, errors) => true) : new SslStream(_tcpClient.GetStream());
                     _networkSStream.AuthenticateAsClient(_newIp);
                     _streamReader = new StreamReader(_networkSStream);
                     _streamWriter = new StreamWriter(_networkSStream);
                     _ircCommands = new IrcCommands(_networkSStream);
-
                 }
 
 
@@ -359,7 +363,7 @@ namespace SimpleIRCLib
             try
             {
                 OnDebugMessage?.Invoke(this, new IrcDebugMessageEventArgs("STARTING LISTENER!", "IRC RECEIVER"));
-              
+
 
                 Dictionary<string, List<string>> usersPerChannelDictionary = new Dictionary<string, List<string>>();
 
@@ -372,21 +376,21 @@ namespace SimpleIRCLib
 
                     OnRawMessageReceived?.Invoke(this, new IrcRawReceivedEventArgs(ircData));
 
-                    
+
 
                     if (ircData.Contains("PING"))
                     {
                         string pingID = ircData.Split(':')[1];
                         WriteIrc("PONG :" + pingID);
                     }
-                    if ( ircData.Contains("PRIVMSG"))
+                    if (ircData.Contains("PRIVMSG"))
                     {
 
 
                         //:MrRareie!~MrRareie_@Rizon-AC4B78B2.cm-3-2a.dynamic.ziggo.nl PRIVMSG #RareIRC :wassup
 
 
-                        
+
                         try
                         {
                             string messageAndChannel = ircData.Split(new string[] { "PRIVMSG" }, StringSplitOptions.None)[1];
@@ -398,7 +402,7 @@ namespace SimpleIRCLib
 
                             OnMessageReceived?.Invoke(this, new IrcReceivedEventArgs(message, user, channel));
                         }
-                        catch(Exception ex)
+                        catch (Exception ex)
                         {
                             OnDebugMessage?.Invoke(this, new IrcDebugMessageEventArgs(ex.ToString(), "MESSAGE RECEIVED ERROR (PRIVMSG)"));
                         }
@@ -451,9 +455,9 @@ namespace SimpleIRCLib
                         //:irc.x2x.cc 353 RoflHerp = #RareIRC :RoflHerp @MrRareie
                         try
                         {
-                            string channel = ircData.Split(new[] { " " + _NewUsername + " ="}, StringSplitOptions.None)[1].Split(':')[0].Replace(" ", string.Empty); 
+                            string channel = ircData.Split(new[] { " " + _NewUsername + " =" }, StringSplitOptions.None)[1].Split(':')[0].Replace(" ", string.Empty);
                             string userListFullString = ircData.Split(new[] { " " + _NewUsername + " =" }, StringSplitOptions.None)[1].Split(':')[1];
-                           
+
 
                             if (!channel.Contains(_NewUsername) && !channel.Contains("="))
                             {
@@ -482,17 +486,18 @@ namespace SimpleIRCLib
                                     usersPerChannelDictionary.Add(channel.Trim(), currentUsers);
                                 }
                             }
-                          
 
-                        } catch (Exception ex)
+
+                        }
+                        catch (Exception ex)
                         {
                             OnDebugMessage?.Invoke(this, new IrcDebugMessageEventArgs(ex.ToString(), "MESSAGE RECEIVED ERROR (USERLIST)"));
                         }
-                                     
-                        
+
+
                     }
 
-                    if(ircData.ToLower().Contains(" 366 "))
+                    if (ircData.ToLower().Contains(" 366 "))
                     {
                         OnUserListReceived?.Invoke(this, new IrcUserListReceivedEventArgs(usersPerChannelDictionary));
                         usersPerChannelDictionary.Clear();
@@ -504,7 +509,8 @@ namespace SimpleIRCLib
 
                 QuitConnect();
                 _stopTask = false;
-            } catch (Exception ioex)
+            }
+            catch (Exception ioex)
             {
                 OnDebugMessage?.Invoke(this, new IrcDebugMessageEventArgs("LOST CONNECTION: " + ioex.ToString(), "MESSAGE RECEIVER"));
                 if (_isConnectionEstablised)
@@ -514,9 +520,9 @@ namespace SimpleIRCLib
                 }
             }
             _IsClientRunning = false;
-        }   
+        }
 
-       
+
         /// <summary>
         /// Sends message to all channels, if message is not one of the following:
         /// /msg [bot] xdcc send [pack]
@@ -542,8 +548,8 @@ namespace SimpleIRCLib
 
             if (matches1.Success)
             {
-                _bot = matches1.Groups["botname"].Value.Trim(); 
-                _packNumber = matches1.Groups["packnum"].Value.Trim(); 
+                _bot = matches1.Groups["botname"].Value.Trim();
+                _packNumber = matches1.Groups["packnum"].Value.Trim();
                 string xdccdl = "PRIVMSG " + _bot + " :XDCC SEND " + _packNumber;
                 return WriteIrc(xdccdl);
             }
@@ -559,13 +565,15 @@ namespace SimpleIRCLib
                 _packNumber = matches3.Groups["packnum"].Value;
                 string xdccdl = "PRIVMSG " + _bot + " :XDCC REMOVE " + _packNumber;
                 return WriteIrc(xdccdl);
-            } else if (input.ToLower().Contains("/names"))
+            }
+            else if (input.ToLower().Contains("/names"))
             {
                 if (input.Contains("#"))
                 {
                     string channelList = input.Split(' ')[1];
                     return GetUsersInChannel(channelList);
-                } else
+                }
+                else
                 {
                     return GetUsersInChannel("");
                 }
@@ -584,7 +592,7 @@ namespace SimpleIRCLib
                     return false;
                 }
             }
-            else if(input.ToLower().Contains("/quit"))
+            else if (input.ToLower().Contains("/quit"))
             {
                 return QuitConnect();
             }
@@ -597,7 +605,7 @@ namespace SimpleIRCLib
                 return WriteIrc("PRIVMSG " + _NewChannelss + " :" + input);
             }
 
-          
+
         }
 
 
@@ -704,11 +712,12 @@ namespace SimpleIRCLib
         /// <returns>true/false depending if it could write to the server</returns>
         public bool GetUsersInChannel(string channel = "")
         {
-            
+
             if (channel != "")
             {
                 return WriteIrc("NAMES " + channel);
-            } else
+            }
+            else
             {
                 return WriteIrc("NAMES " + _NewChannelss);
             }
@@ -726,7 +735,8 @@ namespace SimpleIRCLib
                 _streamWriter.Write(input + Environment.NewLine);
                 _streamWriter.Flush();
                 return true;
-            } catch(Exception e)
+            }
+            catch (Exception e)
             {
                 OnDebugMessage?.Invoke(this, new IrcDebugMessageEventArgs("Could not send message" + input + ", _tcpClient client is not running :X, error : " + e.ToString(), "MESSAGE SENDER")); ;
                 return false;
@@ -743,13 +753,14 @@ namespace SimpleIRCLib
             try
             {
                 return !_dccClient.AbortDownloader(_timeOut);
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 OnDebugMessage?.Invoke(this, new IrcDebugMessageEventArgs("Could not stop XDCC Download, error: " + e.ToString(), "IRC CLIENT XDCC STOP"));
                 return true;
             }
         }
-        
+
         /// <summary>
         /// Checks if a download is running or not.
         /// </summary>
@@ -796,5 +807,5 @@ namespace SimpleIRCLib
         }
     }
 
-    
+
 }
